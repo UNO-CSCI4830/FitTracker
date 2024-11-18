@@ -13,6 +13,9 @@ const SleepScreen: React.FC = () => {
   const [hoursSlept, setHoursSlept] = useState<string>(''); // Hours slept input as string
   const [sleepLog, setSleepLog] = useState<SleepEntry[]>([]); // Array of sleep entries
   const [selectedDate, setSelectedDate] = useState<string>(new Date().toDateString()); // Default to today's date
+  const [sleepGoal, setSleepGoal] = useState<string>(''); // User's sleep goal
+  const [goalStatus, setGoalStatus] = useState<string>(''); // To track if the user met the goal
+  const [goalStatusColor, setGoalStatusColor] = useState<string>('green'); // Default color for goal status
 
   const handleLogSleep = () => {
     if (!hoursSlept) {
@@ -34,6 +37,15 @@ const SleepScreen: React.FC = () => {
 
     setSleepLog((prevLog) => [...prevLog, newEntry]);
 
+    // Check if the user met their goal
+    if (sleepGoal && numericHours >= parseInt(sleepGoal, 10)) {
+      setGoalStatus('Goal met!');
+      setGoalStatusColor('green');
+    } else if (sleepGoal) {
+      setGoalStatus('Goal not met. Try to get more rest!');
+      setGoalStatusColor('red');
+    }
+
     Alert.alert('Sleep Logged', `Hours Slept: ${numericHours}, Date: ${selectedDate}`);
     setHoursSlept('');
   };
@@ -41,6 +53,14 @@ const SleepScreen: React.FC = () => {
   const handleHoursChange = (text: string) => {
     if (/^\d*$/.test(text)) {
       setHoursSlept(text);
+    }
+  };
+
+  const handleGoalChange = (text: string) => {
+    if (/^\d*$/.test(text)) {
+      setSleepGoal(text);
+      setGoalStatus(''); // Reset goal status whenever the goal is changed
+      setGoalStatusColor('green'); // Reset the color to green if the goal is changed
     }
   };
 
@@ -53,6 +73,21 @@ const SleepScreen: React.FC = () => {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Log Sleep</Text>
+      
+      {/* Sleep Goal Input */}
+      <TextInput
+        placeholder="Set Sleep Goal (Hours)"
+        style={styles.input}
+        keyboardType="numeric"
+        value={sleepGoal}
+        onChangeText={handleGoalChange}
+      />
+      {sleepGoal && (
+        <Text style={[styles.goalStatus, { color: goalStatusColor }]}>
+          {goalStatus}
+        </Text>
+      )}
+
       <TextInput
         placeholder="Hours Slept"
         style={styles.input}
@@ -127,6 +162,11 @@ const styles = StyleSheet.create({
     color: '#fff',
     textAlign: 'center',
     fontSize: 16,
+  },
+  goalStatus: {
+    fontSize: 16,
+    marginTop: 10,
+    fontWeight: 'bold',
   },
   datePicker: {
     height: 50,

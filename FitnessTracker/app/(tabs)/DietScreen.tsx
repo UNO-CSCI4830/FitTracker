@@ -14,6 +14,9 @@ const DietScreen: React.FC = () => {
   const [calories, setCalories] = useState('');
   const [dietLog, setDietLog] = useState<DietEntry[]>([]); // Array of diet entries
   const [selectedDate, setSelectedDate] = useState<string>(new Date().toDateString()); // Default to today's date
+  const [goalCalories, setGoalCalories] = useState<string>(''); // User's calorie goal
+  const [goalStatus, setGoalStatus] = useState<string>(''); // To track if the user met the goal
+  const [goalStatusColor, setGoalStatusColor] = useState<string>('green'); // Default color for goal status
 
   const handleLogDiet = () => {
     if (!foodItem || !calories) {
@@ -34,23 +37,23 @@ const DietScreen: React.FC = () => {
       date: selectedDate,
     };
 
-    setDietLog((prevLog) => [...prevLog, newEntry]);
+    const updatedLog = [...dietLog, newEntry];
+    setDietLog(updatedLog);
+
+    // Check if the user met their goal
+    const totalCalories = updatedLog.reduce((sum, entry) => sum + entry.calories, 0);
+    if (goalCalories && numericCalories <= parseInt(goalCalories, 10)) {
+      setGoalStatus('Goal met!');
+      setGoalStatusColor('green');
+    } else if (goalCalories) {
+      setGoalStatus('Goal not met. Try again tomorrow!');
+      setGoalStatusColor('red');
+    }
 
     Alert.alert('Diet Logged', `Food: ${foodItem}, Calories: ${numericCalories}, Date: ${selectedDate}`);
     setFoodItem('');
     setCalories('');
   };
-
-  const today = new Date().toDateString();
-  const todayLog = dietLog.filter((entry) => entry.date === selectedDate);
-
-  const totalCalories = todayLog.reduce((sum, entry) => sum + entry.calories, 0);
-
-  const dateOptions = Array.from({ length: 7 }, (_, i) => {
-    const date = new Date();
-    date.setDate(date.getDate() - i);
-    return date.toDateString();
-  });
 
   const handleCaloriesChange = (text: string) => {
     if (/^\d*$/.test(text)) {
@@ -58,9 +61,40 @@ const DietScreen: React.FC = () => {
     }
   };
 
+  const handleGoalChange = (text: string) => {
+    if (/^\d*$/.test(text)) {
+      setGoalCalories(text);
+      setGoalStatus(''); // Reset goal status whenever the goal is changed
+      setGoalStatusColor('green'); // Reset the color to green if the goal is changed
+    }
+  };
+
+  const dateOptions: string[] = Array.from({ length: 7 }, (_, i) => {
+    const date = new Date();
+    date.setDate(date.getDate() - i);
+    return date.toDateString();
+  });
+
+  const todayLog = dietLog.filter((entry) => entry.date === selectedDate);
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Log Diet</Text>
+
+      {/* Goal Input */}
+      <TextInput
+        placeholder="Set Your Goal (Calories)"
+        style={styles.input}
+        keyboardType="numeric"
+        value={goalCalories}
+        onChangeText={handleGoalChange}
+      />
+      {goalCalories && (
+        <Text style={[styles.goalStatus, { color: goalStatusColor }]}>
+          {goalStatus}
+        </Text>
+      )}
+
       <TextInput
         placeholder="Food Item"
         style={styles.input}
@@ -91,7 +125,7 @@ const DietScreen: React.FC = () => {
         ))}
       </Picker>
 
-      <Text style={styles.logsTitle}>Today's Diet Log</Text>
+      <Text style={styles.logsTitle}>Diet Log</Text>
       <FlatList
         data={todayLog}
         keyExtractor={(item) => item.id}
@@ -99,19 +133,20 @@ const DietScreen: React.FC = () => {
           <View style={styles.logItem}>
             <Text>Food: {item.foodItem}</Text>
             <Text>Calories: {item.calories}</Text>
-            <Text>Date: {item.date}</Text> {/* Add the date to the log entry */}
+            <Text>Date: {item.date}</Text>
           </View>
         )}
-        ListEmptyComponent={<Text>No entries logged for today.</Text>}
+        ListEmptyComponent={<Text>No entries logged.</Text>}
       />
-      
-      <Text style={styles.totalCalories}>Total Calories: {totalCalories}</Text>
+
+      <Text style={styles.totalCalories}>Total Calories: {todayLog.reduce((sum, entry) => sum + entry.calories, 0)}</Text>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
     padding: 20,
     justifyContent: 'flex-start',
     alignItems: 'center',
@@ -165,6 +200,11 @@ const styles = StyleSheet.create({
   totalCalories: {
     fontSize: 18,
     marginTop: 20,
+  },
+  goalStatus: {
+    fontSize: 16,
+    marginTop: 10,
+    fontWeight: 'bold',
   },
 });
 
