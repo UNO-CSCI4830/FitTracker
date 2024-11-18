@@ -1,15 +1,21 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, Alert, FlatList } from 'react-native';
+import { View, Text, TextInput, Alert, FlatList, StyleSheet, TouchableOpacity } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 
-const DietScreen = () => {
+interface DietEntry {
+  id: string;
+  foodItem: string;
+  calories: number;
+  date: string;
+}
+
+const DietScreen: React.FC = () => {
   const [foodItem, setFoodItem] = useState('');
   const [calories, setCalories] = useState('');
-  const [dietLog, setDietLog] = useState([]);
-  const [selectedDate, setSelectedDate] = useState(new Date().toDateString());
+  const [dietLog, setDietLog] = useState<DietEntry[]>([]); // Array of diet entries
+  const [selectedDate, setSelectedDate] = useState<string>(new Date().toDateString()); // Default to today's date
 
   const handleLogDiet = () => {
-    // Validate that both fields are filled and calories is a valid number
     if (!foodItem || !calories) {
       Alert.alert('Error', 'Please fill out both fields');
       return;
@@ -21,13 +27,13 @@ const DietScreen = () => {
       return;
     }
 
-    const newEntry = { 
-      id: Date.now().toString(), 
-      foodItem, 
-      calories: numericCalories, 
-      date: selectedDate 
+    const newEntry: DietEntry = {
+      id: Date.now().toString(),
+      foodItem,
+      calories: numericCalories,
+      date: selectedDate,
     };
-    
+
     setDietLog((prevLog) => [...prevLog, newEntry]);
 
     Alert.alert('Diet Logged', `Food: ${foodItem}, Calories: ${numericCalories}, Date: ${selectedDate}`);
@@ -36,40 +42,48 @@ const DietScreen = () => {
   };
 
   const today = new Date().toDateString();
-  const todayLog = dietLog.filter(entry => entry.date === selectedDate);
+  const todayLog = dietLog.filter((entry) => entry.date === selectedDate);
 
   const totalCalories = todayLog.reduce((sum, entry) => sum + entry.calories, 0);
 
-  // Generate a list of dates for the past week
   const dateOptions = Array.from({ length: 7 }, (_, i) => {
     const date = new Date();
     date.setDate(date.getDate() - i);
     return date.toDateString();
   });
 
+  const handleCaloriesChange = (text: string) => {
+    if (/^\d*$/.test(text)) {
+      setCalories(text);
+    }
+  };
+
   return (
-    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-      <Text>Log Diet</Text>
+    <View style={styles.container}>
+      <Text style={styles.title}>Log Diet</Text>
       <TextInput
         placeholder="Food Item"
-        style={{ borderWidth: 1, padding: 10, margin: 10, width: '80%' }}
+        style={styles.input}
         value={foodItem}
         onChangeText={setFoodItem}
       />
       <TextInput
         placeholder="Calories"
-        style={{ borderWidth: 1, padding: 10, margin: 10, width: '80%' }}
+        style={styles.input}
         keyboardType="numeric"
         value={calories}
-        onChangeText={setCalories}
+        onChangeText={handleCaloriesChange}
       />
 
-      <Button title="Log Diet" onPress={handleLogDiet} />
+      {/* Custom styled "Log Diet" button */}
+      <TouchableOpacity style={styles.actionButton} onPress={handleLogDiet}>
+        <Text style={styles.buttonText}>Log Diet</Text>
+      </TouchableOpacity>
 
       {/* Date Picker */}
       <Picker
         selectedValue={selectedDate}
-        style={{ height: 50, width: '80%', margin: 10 }}
+        style={styles.datePicker}
         onValueChange={(itemValue) => setSelectedDate(itemValue)}
       >
         {dateOptions.map((date) => (
@@ -77,24 +91,81 @@ const DietScreen = () => {
         ))}
       </Picker>
 
-
-
-      <Text style={{ fontSize: 20, marginTop: 20 }}>Today's Diet Log</Text>
+      <Text style={styles.logsTitle}>Today's Diet Log</Text>
       <FlatList
         data={todayLog}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
-          <View style={{ padding: 10, borderBottomWidth: 1, width: '80%', flexDirection: 'row', justifyContent: 'space-between' }}>
+          <View style={styles.logItem}>
             <Text>Food: {item.foodItem}</Text>
             <Text>Calories: {item.calories}</Text>
+            <Text>Date: {item.date}</Text> {/* Add the date to the log entry */}
           </View>
         )}
         ListEmptyComponent={<Text>No entries logged for today.</Text>}
       />
       
-      <Text style={{ fontSize: 18, marginTop: 20 }}>Total Calories: {totalCalories}</Text>
+      <Text style={styles.totalCalories}>Total Calories: {totalCalories}</Text>
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    padding: 20,
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 20,
+  },
+  input: {
+    height: 40,
+    borderColor: '#ccc',
+    borderWidth: 1,
+    marginBottom: 10,
+    paddingLeft: 10,
+    borderRadius: 5,
+    width: '80%',
+  },
+  actionButton: {
+    paddingVertical: 10,
+    paddingHorizontal: 30,
+    borderRadius: 5,
+    backgroundColor: '#333',
+    marginTop: 20,
+    alignSelf: 'center',
+  },
+  buttonText: {
+    color: '#fff',
+    textAlign: 'center',
+    fontSize: 16,
+  },
+  datePicker: {
+    height: 50,
+    width: '80%',
+    marginBottom: 20,
+  },
+  logsTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginTop: 20,
+  },
+  logItem: {
+    marginBottom: 10,
+    padding: 10,
+    borderRadius: 5,
+    backgroundColor: '#f9f9f9',
+    borderWidth: 1,
+    borderColor: '#ddd',
+    width: '80%',
+  },
+  totalCalories: {
+    fontSize: 18,
+    marginTop: 20,
+  },
+});
 
 export default DietScreen;
