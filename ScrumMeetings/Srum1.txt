@@ -1,0 +1,14 @@
+Meeting Date: 9/20
+- Discussed creating SRS and what should be Required
+Work on Software Requirement Specifications:
+  Keep track of the user’s progress
+  Graph (30 days) that shows user’s progress
+  System to input exercise data
+  System to input calorie data
+  Personalized Analysis of User Data
+  Sleep tracking
+  Goal setting(Daily notifications)
+- Discussed what the application should look like.
+Basic UI:
+  Main screen with general info(Calories, Sleep, Exercise)
+  Tabs at the bottom to pull up specific items/info
