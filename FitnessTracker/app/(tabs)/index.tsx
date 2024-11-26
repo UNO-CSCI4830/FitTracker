@@ -5,6 +5,19 @@ import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 
 export default function FitnessTrackerScreen() {
+  // Function to get the time of day and return a greeting
+  const getGreeting = (): string => {
+    const currentHour = new Date().getHours();
+
+    if (currentHour < 12) {
+      return 'Good Morning';
+    } else if (currentHour < 18) {
+      return 'Good Afternoon';
+    } else {
+      return 'Good Evening';
+    }
+  };
+
   return (
     <ThemedView style={{ flex: 1, backgroundColor: '#f2f2f2' }}>
       <ParallaxScrollView
@@ -20,6 +33,12 @@ export default function FitnessTrackerScreen() {
           <ThemedText type="title">Fitness Tracker</ThemedText>
           {/* Consider adding an icon for fitness here */}
         </ThemedView>
+
+        {/* Display greeting message */}
+        <ThemedView style={styles.greetingContainer}>
+          <Text style={styles.greetingText}>{getGreeting()}</Text>
+        </ThemedView>
+
         <ThemedView style={styles.statsContainer}>
           <View style={styles.statItem}>
             <Text style={styles.statLabel}>Steps</Text>
@@ -34,6 +53,7 @@ export default function FitnessTrackerScreen() {
             <Text style={styles.statValue}>0</Text>
           </View>
         </ThemedView>
+
         <ThemedView style={styles.actionContainer}>
           <Text style={styles.actionButton}>Track Activity</Text>
         </ThemedView>
@@ -47,6 +67,18 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
+  },
+  greetingContainer: {
+    marginTop: 20,
+    padding: 10,
+    borderRadius: 10,
+    backgroundColor: '#f2f2f2',
+    alignItems: 'center',
+  },
+  greetingText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#333',
   },
   statsContainer: {
     marginTop: 20,
