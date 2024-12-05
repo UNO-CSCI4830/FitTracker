@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, Alert, FlatList, StyleSheet, TouchableOpacity } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { useColorScheme } from 'react-native';
 
 interface DietEntry {
   id: string;
@@ -12,11 +14,12 @@ interface DietEntry {
 const DietScreen: React.FC = () => {
   const [foodItem, setFoodItem] = useState('');
   const [calories, setCalories] = useState('');
-  const [dietLog, setDietLog] = useState<DietEntry[]>([]); // Array of diet entries
-  const [selectedDate, setSelectedDate] = useState<string>(new Date().toDateString()); // Default to today's date
-  const [goalCalories, setGoalCalories] = useState<string>(''); // User's calorie goal
-  const [goalStatus, setGoalStatus] = useState<string>(''); // To track if the user met the goal
-  const [goalStatusColor, setGoalStatusColor] = useState<string>('green'); // Default color for goal status
+  const [dietLog, setDietLog] = useState<DietEntry[]>([]);
+  const [selectedDate, setSelectedDate] = useState<string>(new Date().toDateString());
+  const [goalCalories, setGoalCalories] = useState<string>('');
+  const [goalStatus, setGoalStatus] = useState<string>('');
+  const [goalStatusColor, setGoalStatusColor] = useState<string>('green');
+  const colorScheme = useColorScheme();
 
   const handleLogDiet = () => {
     if (!foodItem || !calories) {
@@ -39,8 +42,8 @@ const DietScreen: React.FC = () => {
 
     const updatedLog = [...dietLog, newEntry];
     setDietLog(updatedLog);
-
-    // Check if the user met their goal
+    
+    // Calculate total calories and check if goal is met
     const totalCalories = updatedLog.reduce((sum, entry) => sum + entry.calories, 0);
     if (goalCalories && numericCalories <= parseInt(goalCalories, 10)) {
       setGoalStatus('Goal met!');
@@ -64,8 +67,8 @@ const DietScreen: React.FC = () => {
   const handleGoalChange = (text: string) => {
     if (/^\d*$/.test(text)) {
       setGoalCalories(text);
-      setGoalStatus(''); // Reset goal status whenever the goal is changed
-      setGoalStatusColor('green'); // Reset the color to green if the goal is changed
+      setGoalStatus('');
+      setGoalStatusColor('green');
     }
   };
 
@@ -78,43 +81,43 @@ const DietScreen: React.FC = () => {
   const todayLog = dietLog.filter((entry) => entry.date === selectedDate);
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Log Diet</Text>
+    <SafeAreaView style={[styles.container, { backgroundColor: colorScheme === 'dark' ? '#333' : '#f5f5f5' }]}> 
+      <View style={{ flex: 1, justifyContent: 'space-between' }}>
+      <Text style={[styles.title, { color: colorScheme === 'dark' ? 'white' : 'black' }]}>Log Diet</Text>
 
-      {/* Goal Input */}
-      <TextInput
-        placeholder="Set Your Goal (Calories)"
-        style={styles.input}
-        keyboardType="numeric"
-        value={goalCalories}
-        onChangeText={handleGoalChange}
-      />
-      {goalCalories && (
-        <Text style={[styles.goalStatus, { color: goalStatusColor }]}>
-          {goalStatus}
-        </Text>
-      )}
+      <View style={styles.inputGroup}>
+        <TextInput
+          placeholder="Set Your Goal (Calories)"
+          style={styles.input}
+          keyboardType="numeric"
+          value={goalCalories}
+          onChangeText={handleGoalChange}
+        />
+        {goalCalories && (
+          <Text style={[styles.goalStatus, { color: goalStatusColor }]}>
+            {goalStatus}
+          </Text>
+        )}
 
-      <TextInput
-        placeholder="Food Item"
-        style={styles.input}
-        value={foodItem}
-        onChangeText={setFoodItem}
-      />
-      <TextInput
-        placeholder="Calories"
-        style={styles.input}
-        keyboardType="numeric"
-        value={calories}
-        onChangeText={handleCaloriesChange}
-      />
+        <TextInput
+          placeholder="Food Item"
+          style={styles.input}
+          value={foodItem}
+          onChangeText={setFoodItem}
+        />
+        <TextInput
+          placeholder="Calories"
+          style={styles.input}
+          keyboardType="numeric"
+          value={calories}
+          onChangeText={handleCaloriesChange}
+        />
+      </View>
 
-      {/* Custom styled "Log Diet" button */}
       <TouchableOpacity style={styles.actionButton} onPress={handleLogDiet}>
         <Text style={styles.buttonText}>Log Diet</Text>
       </TouchableOpacity>
 
-      {/* Date Picker */}
       <Picker
         selectedValue={selectedDate}
         style={styles.datePicker}
@@ -125,22 +128,27 @@ const DietScreen: React.FC = () => {
         ))}
       </Picker>
 
-      <Text style={styles.logsTitle}>Diet Log</Text>
-      <FlatList
-        data={todayLog}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <View style={styles.logItem}>
-            <Text>Food: {item.foodItem}</Text>
-            <Text>Calories: {item.calories}</Text>
-            <Text>Date: {item.date}</Text>
-          </View>
-        )}
-        ListEmptyComponent={<Text>No entries logged.</Text>}
-      />
+      <View style={styles.logEntriesContainer}>
+        <Text style={styles.logsTitle}>Diet Log</Text>
+        <FlatList
+          data={todayLog}
+          keyExtractor={(item) => item.id}
+          renderItem={({ item }) => (
+            <View style={styles.logItem}>
+              <Text>Food: {item.foodItem}</Text>
+              <Text>Calories: {item.calories}</Text>
+              <Text>Date: {item.date}</Text>
+            </View>
+          )}
+          ListEmptyComponent={<Text>No entries logged.</Text>}
+        />
+      </View>
 
-      <Text style={styles.totalCalories}>Total Calories: {todayLog.reduce((sum, entry) => sum + entry.calories, 0)}</Text>
+      <Text style={styles.totalCalories}>
+        Total Calories: {todayLog.reduce((sum, entry) => sum + entry.calories, 0)}
+      </Text>
     </View>
+  </SafeAreaView>
   );
 };
 
@@ -148,13 +156,16 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    justifyContent: 'flex-start',
     alignItems: 'center',
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 20,
+  },
+  inputGroup: {
+    width: '80%',
+    marginBottom: 30,
   },
   input: {
     height: 40,
@@ -163,7 +174,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     paddingLeft: 10,
     borderRadius: 5,
-    width: '80%',
+    width: '100%', 
   },
   actionButton: {
     paddingVertical: 10,
@@ -183,6 +194,10 @@ const styles = StyleSheet.create({
     width: '80%',
     marginBottom: 20,
   },
+  logEntriesContainer: {
+    marginTop: 20,
+    width: '80%',
+  },
   logsTitle: {
     fontSize: 20,
     fontWeight: 'bold',
@@ -195,11 +210,12 @@ const styles = StyleSheet.create({
     backgroundColor: '#f9f9f9',
     borderWidth: 1,
     borderColor: '#ddd',
-    width: '80%',
+    width: '100%', 
   },
   totalCalories: {
     fontSize: 18,
     marginTop: 20,
+    marginBottom: 20, 
   },
   goalStatus: {
     fontSize: 16,

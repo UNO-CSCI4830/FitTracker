@@ -15,14 +15,18 @@
     "ios": {
       "supportsTablet": true,
       "infoPlist": {
-        "NSHealthUpdateUsageDescription": "This app uses HealthKit to track your steps."
+        "NSHealthUpdateUsageDescription": "This app uses HealthKit to track your steps.",
+        "UIBackgroundModes": ["motion"]
       }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "permissions": [
+        "ACTIVITY_RECOGNITION"
+      ]
     },
     "web": {
       "bundler": "metro",

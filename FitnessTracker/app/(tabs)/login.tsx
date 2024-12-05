@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, TextInput, Button, Text, StyleSheet, Alert } from 'react-native';
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from 'firebase/auth';
 import { app } from '../../firebaseConfig'; // Adjust the path to firebaseConfig.js if needed
+import { useColorScheme } from 'react-native';
 
 const auth = getAuth(app);
 
@@ -10,6 +11,7 @@ export default function AuthScreen() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [user, setUser] = useState(null); // Store authenticated user
+  const colorScheme = useColorScheme(); // Get the color scheme
 
   // Listen for auth state changes
   useEffect(() => {
@@ -54,24 +56,24 @@ export default function AuthScreen() {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: colorScheme === 'dark' ? '#333' : '#f5f5f5' }]}> 
       {user ? (
         // If the user is signed in, show a welcome message and sign out button
         <>
-          <Text style={styles.welcomeText}>Welcome, {user.email}!</Text>
+          <Text style={[styles.welcomeText, { color: colorScheme === 'dark' ? 'white' : 'black' }]}>Welcome, {user.email}!</Text> 
           <Button title="Sign Out" onPress={handleSignOut} />
         </>
       ) : (
         // If the user is not signed in, show sign-in/sign-up form
         <>
           <TextInput
-            style={styles.input}
+            style={[styles.input, { backgroundColor: colorScheme === 'dark' ? '#555' : '#fff', color: colorScheme === 'dark' ? '#fff' : '#000' }]} 
             placeholder="Email"
             onChangeText={setEmail}
             value={email}
           />
           <TextInput
-            style={styles.input}
+            style={[styles.input, { backgroundColor: colorScheme === 'dark' ? '#555' : '#fff', color: colorScheme === 'dark' ? '#fff' : '#000' }]} 
             placeholder="Password"
             secureTextEntry
             onChangeText={setPassword}
@@ -83,7 +85,7 @@ export default function AuthScreen() {
           </View>
         </>
       )}
-      {error ? <Text style={styles.errorText}>{error}</Text> : null}
+      {error ? <Text style={[styles.errorText, { color: colorScheme === 'dark' ? 'orange' : 'red' }]}>{error}</Text> : null} 
     </View>
   );
 }

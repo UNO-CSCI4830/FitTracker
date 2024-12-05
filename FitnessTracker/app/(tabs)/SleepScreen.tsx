@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, Alert, FlatList, StyleSheet, TouchableOpacity } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { useColorScheme } from 'react-native';
 
 // Define types for the sleep log entry
 interface SleepEntry {
@@ -16,6 +18,7 @@ const SleepScreen: React.FC = () => {
   const [sleepGoal, setSleepGoal] = useState<string>(''); // User's sleep goal
   const [goalStatus, setGoalStatus] = useState<string>(''); // To track if the user met the goal
   const [goalStatusColor, setGoalStatusColor] = useState<string>('green'); // Default color for goal status
+  const colorScheme = useColorScheme();
 
   const handleLogSleep = () => {
     if (!hoursSlept) {
@@ -71,37 +74,37 @@ const SleepScreen: React.FC = () => {
   });
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Log Sleep</Text>
-      
-      {/* Sleep Goal Input */}
-      <TextInput
-        placeholder="Set Sleep Goal (Hours)"
-        style={styles.input}
-        keyboardType="numeric"
-        value={sleepGoal}
-        onChangeText={handleGoalChange}
-      />
-      {sleepGoal && (
-        <Text style={[styles.goalStatus, { color: goalStatusColor }]}>
-          {goalStatus}
-        </Text>
-      )}
-
-      <TextInput
-        placeholder="Hours Slept"
-        style={styles.input}
-        keyboardType="numeric"
-        value={hoursSlept}
-        onChangeText={handleHoursChange}
-      />
-
-      {/* Custom styled "Log Sleep" button */}
+      <SafeAreaView style={[styles.container, { backgroundColor: colorScheme === 'dark' ? '#333' : '#f5f5f5' }]}>
+        <View style={{ flex: 1, justifyContent: 'space-between' }}>
+          <Text style={[styles.title, { color: colorScheme === 'dark' ? 'white' : 'black' }]}>Log Sleep</Text>
+  
+      <View style={styles.inputGroup}>
+        <TextInput
+          placeholder="Set Sleep Goal (Hours)"
+          style={styles.input}
+          keyboardType="numeric"
+          value={sleepGoal}
+          onChangeText={handleGoalChange}
+        />
+        {sleepGoal && (
+          <Text style={[styles.goalStatus, { color: goalStatusColor }]}>
+            {goalStatus}
+          </Text>
+        )}
+  
+        <TextInput
+          placeholder="Hours Slept"
+          style={styles.input}
+          keyboardType="numeric"
+          value={hoursSlept}
+          onChangeText={handleHoursChange}
+        />
+      </View>
+  
       <TouchableOpacity style={styles.actionButton} onPress={handleLogSleep}>
         <Text style={styles.buttonText}>Log Sleep</Text>
       </TouchableOpacity>
-
-      {/* Date Picker */}
+  
       <Picker
         selectedValue={selectedDate}
         style={styles.datePicker}
@@ -111,21 +114,25 @@ const SleepScreen: React.FC = () => {
           <Picker.Item key={date} label={date} value={date} />
         ))}
       </Picker>
-
-      <Text style={styles.logsTitle}>Logged Sleep Entries</Text>
-      <FlatList
-        data={sleepLog}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <View style={styles.logItem}>
-            <Text>Hours Slept: {item.hoursSlept}</Text>
-            <Text>Date: {item.date}</Text>
-          </View>
-        )}
-        ListEmptyComponent={<Text>No entries logged.</Text>}
-      />
+  
+      <View style={styles.logEntriesContainer}>
+      <Text style={[styles.logsTitle, { color: colorScheme === 'dark' ? 'white' : 'black' }]}>Logged Sleep Entries</Text>
+        <FlatList
+          data={sleepLog}
+          keyExtractor={(item) => item.id}
+          renderItem={({ item }) => (
+            <View style={styles.logItem}>
+              <Text>Hours Slept: {item.hoursSlept}</Text>
+              <Text>Date: {item.date}</Text>
+            </View>
+          )}
+          ListEmptyComponent={<Text style={{ color: colorScheme === 'dark' ? 'white' : 'black' }}>No entries logged.</Text>}
+        />
+      </View>
     </View>
+  </SafeAreaView>
   );
+  
 };
 
 const styles = StyleSheet.create({
@@ -133,13 +140,17 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 20,
     justifyContent: 'flex-start',
-    alignItems: 'center', // Center all elements horizontally
+    alignItems: 'center',
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
     textAlign: 'center',
     marginBottom: 20,
+  },
+  inputGroup: {
+    width: '80%',
+    marginBottom: 30,
   },
   input: {
     height: 40,
@@ -148,7 +159,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     paddingLeft: 10,
     borderRadius: 5,
-    width: '80%', // Set the width to make inputs consistent with the exercise page
+    width: '100%',
   },
   actionButton: {
     paddingVertical: 10,
@@ -170,8 +181,12 @@ const styles = StyleSheet.create({
   },
   datePicker: {
     height: 50,
-    width: '80%', // Adjust width to match the input fields
+    width: '80%',
     marginBottom: 20,
+  },
+  logEntriesContainer: {
+    marginTop: 20,
+    width: '80%',
   },
   logsTitle: {
     fontSize: 20,
@@ -186,7 +201,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#f9f9f9',
     borderWidth: 1,
     borderColor: '#ddd',
-    width: '80%', // Consistent width with the inputs
+    width: '100%',
   },
 });
 
