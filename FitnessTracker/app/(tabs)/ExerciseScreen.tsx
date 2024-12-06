@@ -1,13 +1,16 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, Alert, FlatList, StyleSheet, TouchableOpacity } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
-
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { useColorScheme } from 'react-native';
+\
 const ExerciseScreen = () => {
   const [workout, setWorkout] = useState('');
   const [reps, setReps] = useState('');
   const [sets, setSets] = useState('');
   const [exerciseLog, setExerciseLog] = useState<any[]>([]);
   const [selectedDate, setSelectedDate] = useState(new Date().toDateString());
+  const colorScheme = useColorScheme();
 
   // New state for fitness goal
   const [goalReps, setGoalReps] = useState('');
@@ -62,29 +65,32 @@ const ExerciseScreen = () => {
   const goalMessage = goalReps && goalSets ? `Your Goal: ${goalReps} reps x ${goalSets} sets` : 'Goal hasn\'t been set yet. Make one!';
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Log Your Exercise</Text>
+      <SafeAreaView style={[styles.container, { backgroundColor: colorScheme === 'dark' ? '#333' : '#f5f5f5' }]}>
+        <View style={{ flex: 1, justifyContent: 'space-between' }}>
+          <Text style={[styles.title, { color: colorScheme === 'dark' ? 'white' : 'black' }]}>Log Your Exercise</Text>
 
-      <TextInput
-        style={styles.input}
-        placeholder="Workout Name"
-        value={workout}
-        onChangeText={setWorkout}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Reps"
-        value={reps}
-        keyboardType="numeric"
-        onChangeText={(text) => handleNumericInputChange(text, setReps)}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Sets"
-        value={sets}
-        keyboardType="numeric"
-        onChangeText={(text) => handleNumericInputChange(text, setSets)}
-      />
+      <View style={styles.inputGroup}>
+        <TextInput
+          style={styles.input}
+          placeholder="Workout Name"
+          value={workout}
+          onChangeText={setWorkout}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Reps"
+          value={reps}
+          keyboardType="numeric"
+          onChangeText={(text) => handleNumericInputChange(text, setReps)}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Sets"
+          value={sets}
+          keyboardType="numeric"
+          onChangeText={(text) => handleNumericInputChange(text, setSets)}
+        />
+      </View>
 
       <Picker
         selectedValue={selectedDate}
@@ -96,35 +102,36 @@ const ExerciseScreen = () => {
         ))}
       </Picker>
 
-      {/* Goal Inputs */}
-      <Text style={styles.goalTitle}>Set Your Fitness Goal</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Goal Reps"
-        value={goalReps}
-        keyboardType="numeric"
-        onChangeText={(text) => handleNumericInputChange(text, setGoalReps)}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Goal Sets"
-        value={goalSets}
-        keyboardType="numeric"
-        onChangeText={(text) => handleNumericInputChange(text, setGoalSets)}
-      />
+      <View style={styles.goalGroup}>
+      <Text style={[styles.goalTitle, { color: colorScheme === 'dark' ? 'white' : 'black' }]}>Set Your Fitness Goal</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Goal Reps"
+          value={goalReps}
+          keyboardType="numeric"
+          onChangeText={(text) => handleNumericInputChange(text, setGoalReps)}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Goal Sets"
+          value={goalSets}
+          keyboardType="numeric"
+          onChangeText={(text) => handleNumericInputChange(text, setGoalSets)}
+        />
+      </View>
 
-      {/* Custom styled "Log Exercise" button */}
+
       <TouchableOpacity style={styles.actionButton} onPress={handleLogExercise}>
         <Text style={styles.buttonText}>Log Exercise</Text>
       </TouchableOpacity>
 
-      {/* Display the Goal or Default Message */}
-      <View style={styles.goalContainer}>
+      <View style={styles.goalMessageContainer}>
         <Text style={styles.goalText}>{goalMessage}</Text>
       </View>
 
-      <View style={styles.logsContainer}>
-        <Text style={styles.logsTitle}>Today's Exercise Log</Text>
+      <View style={styles.logEntriesContainer}>
+      <Text style={[styles.logsTitle, { color: colorScheme === 'dark' ? 'white' : 'black' }]}>Today's Exercise Log</Text>
+
         <FlatList
           data={todayLog}
           keyExtractor={(item) => item.id}
@@ -136,10 +143,12 @@ const ExerciseScreen = () => {
               <Text>Date: {item.date}</Text>
             </View>
           )}
-          ListEmptyComponent={<Text>No entries logged for today.</Text>}
+          ListEmptyComponent={<Text style={{ color: colorScheme === 'dark' ? 'white' : 'black' }}>No entries logged for today.</Text>}
         />
       </View>
     </View>
+  </SafeAreaView>
+
   );
 };
 
@@ -148,7 +157,8 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 20,
     justifyContent: 'flex-start',
-    alignItems: 'center', // Center all elements horizontally
+    alignItems: 'center',
+
   },
   title: {
     fontSize: 24,
@@ -156,18 +166,31 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginBottom: 20,
   },
-  input: {
-    height: 40,
-    borderColor: '#ccc',
-    borderWidth: 1,
+  inputGroup: {
+    width: '80%',
+    marginBottom: 30,
+  },
+  goalGroup: {
+    width: '80%',
+    marginBottom: 30,
+  },
+  goalTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
     marginBottom: 10,
-    paddingLeft: 10,
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    padding: 10,
+    marginBottom: 10,
     borderRadius: 5,
-    width: '80%', // Set the width to make inputs consistent
+    width: '100%', 
   },
   datePicker: {
     height: 50,
-    width: '80%', // Adjust the width for consistency
+    width: '80%',
+
     marginBottom: 20,
   },
   actionButton: {
@@ -183,27 +206,26 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontSize: 16,
   },
-  goalContainer: {
+  goalMessageContainer: {
+
     marginTop: 20,
     padding: 10,
     borderRadius: 10,
     backgroundColor: '#f2f2f2',
     alignItems: 'center',
+    alignSelf: 'center',
+    width: '80%',
+
   },
   goalText: {
     fontSize: 16,
     fontWeight: 'bold',
     color: '#333',
   },
-  goalTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
+  logEntriesContainer: {
     marginTop: 20,
-    marginBottom: 10,
-  },
-  logsContainer: {
-    marginTop: 20,
-    width: '80%', // Match the width of the log section with the inputs
+    width: '80%',
+
   },
   logsTitle: {
     fontSize: 18,
