@@ -21,6 +21,7 @@ const DietScreen: React.FC = () => {
   const [goalStatusColor, setGoalStatusColor] = useState<string>('green');
   const colorScheme = useColorScheme();
 
+
   const handleLogDiet = () => {
     if (!foodItem || !calories) {
       Alert.alert('Error', 'Please fill out both fields');

@@ -61,6 +61,7 @@ export default function AuthScreen() {
         // If the user is signed in, show a welcome message and sign out button
         <>
           <Text style={[styles.welcomeText, { color: colorScheme === 'dark' ? 'white' : 'black' }]}>Welcome, {user.email}!</Text> 
+
           <Button title="Sign Out" onPress={handleSignOut} />
         </>
       ) : (
@@ -68,12 +69,14 @@ export default function AuthScreen() {
         <>
           <TextInput
             style={[styles.input, { backgroundColor: colorScheme === 'dark' ? '#555' : '#fff', color: colorScheme === 'dark' ? '#fff' : '#000' }]} 
+
             placeholder="Email"
             onChangeText={setEmail}
             value={email}
           />
           <TextInput
             style={[styles.input, { backgroundColor: colorScheme === 'dark' ? '#555' : '#fff', color: colorScheme === 'dark' ? '#fff' : '#000' }]} 
+
             placeholder="Password"
             secureTextEntry
             onChangeText={setPassword}
@@ -86,6 +89,7 @@ export default function AuthScreen() {
         </>
       )}
       {error ? <Text style={[styles.errorText, { color: colorScheme === 'dark' ? 'orange' : 'red' }]}>{error}</Text> : null} 
+
     </View>
   );
 }

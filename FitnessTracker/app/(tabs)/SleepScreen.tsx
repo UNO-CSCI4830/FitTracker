@@ -4,6 +4,7 @@ import { Picker } from '@react-native-picker/picker';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useColorScheme } from 'react-native';
 
+
 // Define types for the sleep log entry
 interface SleepEntry {
   id: string;
@@ -19,6 +20,7 @@ const SleepScreen: React.FC = () => {
   const [goalStatus, setGoalStatus] = useState<string>(''); // To track if the user met the goal
   const [goalStatusColor, setGoalStatusColor] = useState<string>('green'); // Default color for goal status
   const colorScheme = useColorScheme();
+
 
   const handleLogSleep = () => {
     if (!hoursSlept) {
@@ -105,6 +107,7 @@ const SleepScreen: React.FC = () => {
         <Text style={styles.buttonText}>Log Sleep</Text>
       </TouchableOpacity>
   
+
       <Picker
         selectedValue={selectedDate}
         style={styles.datePicker}
@@ -133,6 +136,7 @@ const SleepScreen: React.FC = () => {
   </SafeAreaView>
   );
   
+
 };
 
 const styles = StyleSheet.create({
@@ -141,6 +145,7 @@ const styles = StyleSheet.create({
     padding: 20,
     justifyContent: 'flex-start',
     alignItems: 'center',
+
   },
   title: {
     fontSize: 24,
@@ -152,6 +157,7 @@ const styles = StyleSheet.create({
     width: '80%',
     marginBottom: 30,
   },
+
   input: {
     height: 40,
     borderColor: '#ccc',
@@ -160,6 +166,7 @@ const styles = StyleSheet.create({
     paddingLeft: 10,
     borderRadius: 5,
     width: '100%',
+
   },
   actionButton: {
     paddingVertical: 10,
@@ -188,6 +195,7 @@ const styles = StyleSheet.create({
     marginTop: 20,
     width: '80%',
   },
+
   logsTitle: {
     fontSize: 20,
     fontWeight: 'bold',

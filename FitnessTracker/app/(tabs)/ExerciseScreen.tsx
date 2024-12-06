@@ -3,7 +3,7 @@ import { View, Text, TextInput, Alert, FlatList, StyleSheet, TouchableOpacity } 
 import { Picker } from '@react-native-picker/picker';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useColorScheme } from 'react-native';
-
+\
 const ExerciseScreen = () => {
   const [workout, setWorkout] = useState('');
   const [reps, setReps] = useState('');
@@ -120,6 +120,7 @@ const ExerciseScreen = () => {
         />
       </View>
 
+
       <TouchableOpacity style={styles.actionButton} onPress={handleLogExercise}>
         <Text style={styles.buttonText}>Log Exercise</Text>
       </TouchableOpacity>
@@ -130,6 +131,7 @@ const ExerciseScreen = () => {
 
       <View style={styles.logEntriesContainer}>
       <Text style={[styles.logsTitle, { color: colorScheme === 'dark' ? 'white' : 'black' }]}>Today's Exercise Log</Text>
+
         <FlatList
           data={todayLog}
           keyExtractor={(item) => item.id}
@@ -146,6 +148,7 @@ const ExerciseScreen = () => {
       </View>
     </View>
   </SafeAreaView>
+
   );
 };
 
@@ -155,6 +158,7 @@ const styles = StyleSheet.create({
     padding: 20,
     justifyContent: 'flex-start',
     alignItems: 'center',
+
   },
   title: {
     fontSize: 24,
@@ -186,6 +190,7 @@ const styles = StyleSheet.create({
   datePicker: {
     height: 50,
     width: '80%',
+
     marginBottom: 20,
   },
   actionButton: {
@@ -202,6 +207,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   goalMessageContainer: {
+
     marginTop: 20,
     padding: 10,
     borderRadius: 10,
@@ -209,6 +215,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     alignSelf: 'center',
     width: '80%',
+
   },
   goalText: {
     fontSize: 16,
@@ -218,6 +225,7 @@ const styles = StyleSheet.create({
   logEntriesContainer: {
     marginTop: 20,
     width: '80%',
+
   },
   logsTitle: {
     fontSize: 18,
