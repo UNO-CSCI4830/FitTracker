@@ -1,5 +1,5 @@
 import React from "react";
-import { render, fireEvent, waitFor } from '@testing-library/react-native';
+import { render, fireEvent, act } from '@testing-library/react-native';
 import { Alert } from 'react-native';
 import FitnessTrackerScreen from '../../app/(tabs)/index';
 import { useEffect } from "react";
@@ -15,6 +15,11 @@ jest.mock('expo-sensors', () => ({
 
 
   describe('Home Screen', () => {
+    beforeEach(() => {
+      jest.clearAllMocks();
+    });
+    
+
     it('displays the correct greeting based on the time of day', () => {
       jest.spyOn(global, 'Date').mockImplementation(() => ({
         getHours: () => 9,
@@ -22,8 +27,6 @@ jest.mock('expo-sensors', () => ({
   
       const { getByText } = render(<FitnessTrackerScreen />);
       expect(getByText('Good Morning')).toBeTruthy();
-  
-      jest.restoreAllMocks();
     });
 
 
@@ -69,4 +72,44 @@ jest.mock('expo-sensors', () => ({
       expect(Pedometer.isAvailableAsync).toHaveBeenCalled();
       expect(Pedometer.watchStepCount).toHaveBeenCalled();
     });
-  });
+
+    
+    it('handle unavailable pedometer', async () => {
+      // Mock unavailable pedometer
+      Pedometer.requestPermissionsAsync.mockResolvedValue({ status: 'granted' });
+      Pedometer.isAvailableAsync.mockResolvedValue(false);
+      const consoleErrorMock = jest.spyOn(console, 'error').mockImplementation(() => {});
+  
+      render(<FitnessTrackerScreen />);
+      await act(async () => {});
+  
+      expect(consoleErrorMock).toHaveBeenCalledWith('Pedometer is not available on this device.');
+      consoleErrorMock.mockRestore();
+    });
+
+
+    it('handle pedometer access denied', async () => {
+      // Mock permission denied
+      Pedometer.requestPermissionsAsync.mockResolvedValue({ status: 'denied' });
+      const consoleErrorMock = jest.spyOn(console, 'error').mockImplementation(() => {});
+  
+      render(<FitnessTrackerScreen />);
+      await act(async () => {});
+  
+      expect(consoleErrorMock).toHaveBeenCalledWith('Access to Pedometer denied.');
+      consoleErrorMock.mockRestore();
+    });
+
+
+    it('handle error during pedometer setup', async () => {
+      // Mock setup error
+      Pedometer.requestPermissionsAsync.mockRejectedValue(new Error('Some error'));
+      const consoleErrorMock = jest.spyOn(console, 'error').mockImplementation(() => {});
+  
+      render(<FitnessTrackerScreen />);
+      await act(async () => {});
+  
+      expect(consoleErrorMock).toHaveBeenCalledWith('Error during Pedometer setup:', expect.any(Error));
+      consoleErrorMock.mockRestore();
+    });
+});
