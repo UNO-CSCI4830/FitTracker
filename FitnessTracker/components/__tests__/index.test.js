@@ -12,6 +12,28 @@ import FitnessTrackerScreen from '../../app/(tabs)/index';
       const { getByText } = render(<FitnessTrackerScreen />);
       expect(getByText('Good Morning')).toBeTruthy();
   
-      jest.restoreAllMocks(); // Reset mock after test
+      jest.restoreAllMocks();
+    });
+  });
+
+  describe('FitnessTrackerScreen Default Stats', () => {
+    it('renders "Steps" with a default value of 0', () => {
+      const { getAllByText } = render(<FitnessTrackerScreen />);
+      expect(getAllByText('Steps')).toBeTruthy();
+      const allZeroValues = getAllByText('0');
+      expect(allZeroValues[0]).toBeTruthy(); // Steps rendered
+    });
+  
+    it('renders "Distance" with a default value of 0.00 km', () => {
+      const { getByText } = render(<FitnessTrackerScreen />);
+      expect(getByText('Distance')).toBeTruthy();
+      expect(getByText('0.00 km')).toBeTruthy(); // Distance rendered
+    });
+  
+    it('renders "Calories" with a default value of 0', () => {
+      const { getAllByText } = render(<FitnessTrackerScreen />);
+      expect(getAllByText('Calories')).toBeTruthy();
+      const allZeroValues = getAllByText('0');
+      expect(allZeroValues[1]).toBeTruthy(); // Calories rendered
     });
   });
