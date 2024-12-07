@@ -5,7 +5,16 @@ import FitnessTrackerScreen from '../../app/(tabs)/index';
 import { useEffect } from "react";
 import { Pedometer } from 'expo-sensors';
 
-  describe('FitnessTrackerScreen', () => {
+jest.mock('expo-sensors', () => ({
+  Pedometer: {
+    requestPermissionsAsync: jest.fn(),
+    isAvailableAsync: jest.fn(),
+    watchStepCount: jest.fn(),
+  },
+}));
+
+
+  describe('Home Screen', () => {
     it('displays the correct greeting based on the time of day', () => {
       jest.spyOn(global, 'Date').mockImplementation(() => ({
         getHours: () => 9,
@@ -16,40 +25,32 @@ import { Pedometer } from 'expo-sensors';
   
       jest.restoreAllMocks();
     });
-  });
 
-  describe('FitnessTrackerScreen Default Stats', () => {
+
     it('renders "Steps" with a default value of 0', () => {
       const { getAllByText } = render(<FitnessTrackerScreen />);
       expect(getAllByText('Steps')).toBeTruthy();
       const allZeroValues = getAllByText('0');
       expect(allZeroValues[0]).toBeTruthy(); // Steps rendered
     });
-  
+
+
     it('renders "Distance" with a default value of 0.00 km', () => {
       const { getByText } = render(<FitnessTrackerScreen />);
       expect(getByText('Distance')).toBeTruthy();
       expect(getByText('0.00 km')).toBeTruthy(); // Distance rendered
     });
-  
+
+
     it('renders "Calories" with a default value of 0', () => {
       const { getAllByText } = render(<FitnessTrackerScreen />);
       expect(getAllByText('Calories')).toBeTruthy();
       const allZeroValues = getAllByText('0');
       expect(allZeroValues[1]).toBeTruthy(); // Calories rendered
     });
-  });
 
-  jest.mock('expo-sensors', () => ({
-    Pedometer: {
-      requestPermissionsAsync: jest.fn(),
-      isAvailableAsync: jest.fn(),
-      watchStepCount: jest.fn(),
-    },
-  }));
-  
-  describe('Activity button', () => {
-    it('should trigger the activity tracking on button press', async () => {
+
+    it('triggers the activity tracking on button press', async () => {
       // Mocking the return values of the Pedometer methods
       Pedometer.requestPermissionsAsync.mockResolvedValue({ status: 'granted' });
       Pedometer.isAvailableAsync.mockResolvedValue(true);
