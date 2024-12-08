@@ -3,7 +3,7 @@ import { View, Text, TextInput, Alert, FlatList, StyleSheet, TouchableOpacity } 
 import { Picker } from '@react-native-picker/picker';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useColorScheme } from 'react-native';
-\
+
 const ExerciseScreen = () => {
   const [workout, setWorkout] = useState('');
   const [reps, setReps] = useState('');
