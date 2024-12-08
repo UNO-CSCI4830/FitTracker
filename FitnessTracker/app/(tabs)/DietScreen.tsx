@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, Alert, FlatList, StyleSheet, TouchableOpacity } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, TextInput, Alert, FlatList, StyleSheet, TouchableOpacity, ColorScheme } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useColorScheme } from 'react-native';
@@ -11,6 +11,83 @@ interface DietEntry {
   date: string;
 }
 
+const getActionButtonStyles = (colorScheme: ColorScheme) => ({
+  paddingVertical: 10,
+  paddingHorizontal: 30,
+  borderRadius: 5,
+  backgroundColor: colorScheme === 'dark' ? '#555' : '#333',
+  marginTop: 20,
+  alignSelf: 'center',
+  borderWidth: 1,
+  borderColor: colorScheme === 'dark' ? '#888' : '#ccc',
+});
+
+const getStyles = (colorScheme: ColorScheme) => StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 20,
+    alignItems: 'center',
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 20,
+  },
+  inputGroup: {
+    marginBottom: 30,
+  },
+  input: {
+    height: 40,
+    borderColor: '#ccc',
+    borderWidth: 1,
+    marginBottom: 10,
+    paddingLeft: 10,
+    borderRadius: 5,
+    width: '100%',
+    padding: 12, 
+  },
+  buttonText: {
+    color: 'white', 
+    textAlign: 'center',
+    fontSize: 16,
+  },
+  datePicker: {
+    height: 50,
+    width: '80%',
+    marginBottom: 20,
+  },
+  logEntriesContainer: {
+    marginTop: 20,
+    width: '80%',
+  },
+  logsTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginTop: 20,
+    color: colorScheme === 'dark' ? 'white' : 'black', 
+  },
+  logItem: {
+    marginBottom: 10,
+    padding: 10,
+    borderRadius: 5,
+    backgroundColor: colorScheme === 'dark' ? '#444' : '#f9f9f9', 
+    borderWidth: 1,
+    borderColor: colorScheme === 'dark' ? '#555' : '#ddd', 
+    width: '100%', 
+  },
+  totalCalories: {
+    fontSize: 18,
+    marginTop: 20,
+    marginBottom: 20, 
+    color: colorScheme === 'dark' ? 'white' : 'black', 
+  },
+  goalStatus: {
+    fontSize: 16,
+    marginTop: 10,
+    fontWeight: 'bold',
+  },
+});
+
 const DietScreen: React.FC = () => {
   const [foodItem, setFoodItem] = useState('');
   const [calories, setCalories] = useState('');
@@ -20,43 +97,45 @@ const DietScreen: React.FC = () => {
   const [goalStatus, setGoalStatus] = useState<string>('');
   const [goalStatusColor, setGoalStatusColor] = useState<string>('green');
   const colorScheme = useColorScheme();
-
+  const styles = getStyles(colorScheme);
+  const [goalSet, setGoalSet] = useState(false);
 
   const handleLogDiet = () => {
     if (!foodItem || !calories) {
       Alert.alert('Error', 'Please fill out both fields');
       return;
     }
-
+  
     const numericCalories = parseInt(calories, 10);
     if (isNaN(numericCalories) || numericCalories < 0) {
       Alert.alert('Error', 'Please enter a valid number for calories');
       return;
     }
-
+  
     const newEntry: DietEntry = {
       id: Date.now().toString(),
       foodItem,
       calories: numericCalories,
       date: selectedDate,
     };
-
-    const updatedLog = [...dietLog, newEntry];
-    setDietLog(updatedLog);
-    
-    // Calculate total calories and check if goal is met
-    const totalCalories = updatedLog.reduce((sum, entry) => sum + entry.calories, 0);
-    if (goalCalories && numericCalories <= parseInt(goalCalories, 10)) {
+  
+    setDietLog((prevLog) => [...prevLog, newEntry]); // Update dietLog using a callback function
+  
+    const totalCalories = [...dietLog, newEntry].reduce((sum, entry) => sum + entry.calories, 0); // Calculate total calories here
+  
+    if (goalCalories && totalCalories <= parseInt(goalCalories, 10)) {
       setGoalStatus('Goal met!');
       setGoalStatusColor('green');
     } else if (goalCalories) {
       setGoalStatus('Goal not met. Try again tomorrow!');
       setGoalStatusColor('red');
     }
-
+  
     Alert.alert('Diet Logged', `Food: ${foodItem}, Calories: ${numericCalories}, Date: ${selectedDate}`);
     setFoodItem('');
     setCalories('');
+  
+    setGoalSet(true);
   };
 
   const handleCaloriesChange = (text: string) => {
@@ -84,145 +163,70 @@ const DietScreen: React.FC = () => {
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colorScheme === 'dark' ? '#333' : '#f5f5f5' }]}> 
       <View style={{ flex: 1, justifyContent: 'space-between' }}>
-      <Text style={[styles.title, { color: colorScheme === 'dark' ? 'white' : 'black' }]}>Log Diet</Text>
+        <Text style={[styles.title, { color: colorScheme === 'dark' ? 'white' : 'black' }]}>Log Diet</Text>
 
-      <View style={styles.inputGroup}>
-        <TextInput
-          placeholder="Set Your Goal (Calories)"
-          style={styles.input}
-          keyboardType="numeric"
-          value={goalCalories}
-          onChangeText={handleGoalChange}
-        />
-        {goalCalories && (
-          <Text style={[styles.goalStatus, { color: goalStatusColor }]}>
-            {goalStatus}
-          </Text>
+        <View style={styles.inputGroup}>
+        {!goalSet && ( // Conditionally render the goal input 
+          <TextInput
+            placeholder="Set Your Goal (Calories)"
+            style={styles.input}
+            keyboardType="numeric"
+            value={goalCalories}
+            onChangeText={handleGoalChange}
+          />
         )}
 
-        <TextInput
-          placeholder="Food Item"
-          style={styles.input}
-          value={foodItem}
-          onChangeText={setFoodItem}
-        />
-        <TextInput
-          placeholder="Calories"
-          style={styles.input}
-          keyboardType="numeric"
-          value={calories}
-          onChangeText={handleCaloriesChange}
-        />
+          <TextInput
+            placeholder="Food Item"
+            style={styles.input}
+            value={foodItem}
+            onChangeText={setFoodItem}
+          />
+          <TextInput
+            placeholder="Calories"
+            style={styles.input}
+            keyboardType="numeric"
+            value={calories}
+            onChangeText={handleCaloriesChange}
+          />
+        </View>
+
+        <TouchableOpacity style={getActionButtonStyles(colorScheme)} onPress={handleLogDiet}>
+          <Text style={styles.buttonText}>Log Diet</Text> 
+        </TouchableOpacity>
+
+        <Picker
+          selectedValue={selectedDate}
+          style={styles.datePicker}
+          onValueChange={(itemValue) => setSelectedDate(itemValue)}
+        >
+          {dateOptions.map((date) => (
+            <Picker.Item key={date} label={date} value={date} />
+          ))}
+        </Picker>
+
+        <View style={styles.logEntriesContainer}>
+          <Text style={styles.logsTitle}>Diet Log</Text>
+          <FlatList
+            data={todayLog}
+            keyExtractor={(item) => item.id}
+            renderItem={({ item }) => (
+              <View style={styles.logItem}> 
+                <Text style={{ color: colorScheme === 'dark' ? 'white' : 'black' }}>Food: {item.foodItem}</Text>
+                <Text style={{ color: colorScheme === 'dark' ? 'white' : 'black' }}>Calories: {item.calories}</Text>
+                <Text style={{ color: colorScheme === 'dark' ? 'white' : 'black' }}>Date: {item.date}</Text>
+              </View>
+            )}
+            ListEmptyComponent={<Text style={{ color: colorScheme === 'dark' ? 'white' : 'black' }}>No entries logged.</Text>}
+          />
+        </View>
+
+        <Text style={styles.totalCalories}>
+          Total Calories: {todayLog.reduce((sum, entry) => sum + entry.calories, 0)}
+        </Text>
       </View>
-
-      <TouchableOpacity style={styles.actionButton} onPress={handleLogDiet}>
-        <Text style={styles.buttonText}>Log Diet</Text>
-      </TouchableOpacity>
-
-      <Picker
-        selectedValue={selectedDate}
-        style={styles.datePicker}
-        onValueChange={(itemValue) => setSelectedDate(itemValue)}
-      >
-        {dateOptions.map((date) => (
-          <Picker.Item key={date} label={date} value={date} />
-        ))}
-      </Picker>
-
-      <View style={styles.logEntriesContainer}>
-        <Text style={styles.logsTitle}>Diet Log</Text>
-        <FlatList
-          data={todayLog}
-          keyExtractor={(item) => item.id}
-          renderItem={({ item }) => (
-            <View style={styles.logItem}>
-              <Text>Food: {item.foodItem}</Text>
-              <Text>Calories: {item.calories}</Text>
-              <Text>Date: {item.date}</Text>
-            </View>
-          )}
-          ListEmptyComponent={<Text>No entries logged.</Text>}
-        />
-      </View>
-
-      <Text style={styles.totalCalories}>
-        Total Calories: {todayLog.reduce((sum, entry) => sum + entry.calories, 0)}
-      </Text>
-    </View>
-  </SafeAreaView>
+    </SafeAreaView>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 20,
-    alignItems: 'center',
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 20,
-  },
-  inputGroup: {
-    width: '80%',
-    marginBottom: 30,
-  },
-  input: {
-    height: 40,
-    borderColor: '#ccc',
-    borderWidth: 1,
-    marginBottom: 10,
-    paddingLeft: 10,
-    borderRadius: 5,
-    width: '100%', 
-  },
-  actionButton: {
-    paddingVertical: 10,
-    paddingHorizontal: 30,
-    borderRadius: 5,
-    backgroundColor: '#333',
-    marginTop: 20,
-    alignSelf: 'center',
-  },
-  buttonText: {
-    color: '#fff',
-    textAlign: 'center',
-    fontSize: 16,
-  },
-  datePicker: {
-    height: 50,
-    width: '80%',
-    marginBottom: 20,
-  },
-  logEntriesContainer: {
-    marginTop: 20,
-    width: '80%',
-  },
-  logsTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginTop: 20,
-  },
-  logItem: {
-    marginBottom: 10,
-    padding: 10,
-    borderRadius: 5,
-    backgroundColor: '#f9f9f9',
-    borderWidth: 1,
-    borderColor: '#ddd',
-    width: '100%', 
-  },
-  totalCalories: {
-    fontSize: 18,
-    marginTop: 20,
-    marginBottom: 20, 
-  },
-  goalStatus: {
-    fontSize: 16,
-    marginTop: 10,
-    fontWeight: 'bold',
-  },
-});
 
 export default DietScreen;

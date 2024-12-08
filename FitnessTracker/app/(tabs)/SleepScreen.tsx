@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Alert, FlatList, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, TextInput, Alert, FlatList, StyleSheet, TouchableOpacity, ColorScheme } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useColorScheme } from 'react-native';
@@ -12,6 +12,86 @@ interface SleepEntry {
   date: string;
 }
 
+const getActionButtonStyles = (colorScheme: ColorScheme) => ({
+  paddingVertical: 10,
+  paddingHorizontal: 30,
+  borderRadius: 5,
+  backgroundColor: colorScheme === 'dark' ? '#555' : '#333',
+  marginTop: 20,
+  alignSelf: 'center',
+  borderWidth: 1,
+  borderColor: colorScheme === 'dark' ? '#888' : '#ccc',
+});
+
+const getStyles = (colorScheme: ColorScheme) => StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 20,
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginBottom: 20,
+  },
+  inputGroup: {
+    marginBottom: 30,
+  },
+  input: {
+    height: 40,
+    borderColor: colorScheme === 'dark' ? '#555' : '#ccc', // Dynamic border color
+    borderWidth: 1,
+    marginBottom: 10,
+    paddingLeft: 10,
+    borderRadius: 5,
+    width: '100%',
+    color: colorScheme === 'dark' ? 'white' : 'black', // Dynamic text color
+  },
+  actionButton: { 
+    paddingVertical: 10,
+    paddingHorizontal: 30,
+    borderRadius: 5,
+    marginTop: 20,
+    alignSelf: 'center',
+  },
+  buttonText: {
+    color: 'white',
+    textAlign: 'center',
+    fontSize: 16,
+  },
+  goalStatus: {
+    fontSize: 16,
+    marginTop: 10,
+    fontWeight: 'bold',
+  },
+  datePicker: {
+    height: 50,
+    width: '80%',
+    marginBottom: 20,
+  },
+  logEntriesContainer: {
+    marginTop: 20,
+    width: '80%',
+  },
+  logsTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginTop: 20,
+    textAlign: 'center',
+  },
+  logItem: {
+    marginBottom: 10,
+    padding: 10,
+    borderRadius: 5,
+    backgroundColor: colorScheme === 'dark' ? '#444' : '#f9f9f9', // Dynamic background color
+    borderWidth: 1,
+    borderColor: colorScheme === 'dark' ? '#555' : '#ddd', // Dynamic border color
+    width: '100%',
+  },
+});
+
 const SleepScreen: React.FC = () => {
   const [hoursSlept, setHoursSlept] = useState<string>(''); // Hours slept input as string
   const [sleepLog, setSleepLog] = useState<SleepEntry[]>([]); // Array of sleep entries
@@ -20,7 +100,7 @@ const SleepScreen: React.FC = () => {
   const [goalStatus, setGoalStatus] = useState<string>(''); // To track if the user met the goal
   const [goalStatusColor, setGoalStatusColor] = useState<string>('green'); // Default color for goal status
   const colorScheme = useColorScheme();
-
+  const styles = getStyles(colorScheme);
 
   const handleLogSleep = () => {
     if (!hoursSlept) {
@@ -103,9 +183,9 @@ const SleepScreen: React.FC = () => {
         />
       </View>
   
-      <TouchableOpacity style={styles.actionButton} onPress={handleLogSleep}>
-        <Text style={styles.buttonText}>Log Sleep</Text>
-      </TouchableOpacity>
+      <TouchableOpacity style={getActionButtonStyles(colorScheme)} onPress={handleLogSleep}>
+          <Text style={styles.buttonText}>Log Sleep</Text>
+        </TouchableOpacity>
   
 
       <Picker
@@ -120,13 +200,13 @@ const SleepScreen: React.FC = () => {
   
       <View style={styles.logEntriesContainer}>
       <Text style={[styles.logsTitle, { color: colorScheme === 'dark' ? 'white' : 'black' }]}>Logged Sleep Entries</Text>
-        <FlatList
+      <FlatList
           data={sleepLog}
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
             <View style={styles.logItem}>
-              <Text>Hours Slept: {item.hoursSlept}</Text>
-              <Text>Date: {item.date}</Text>
+              <Text style={{ color: colorScheme === 'dark' ? 'white' : 'black' }}>Hours Slept: {item.hoursSlept}</Text>
+              <Text style={{ color: colorScheme === 'dark' ? 'white' : 'black' }}>Date: {item.date}</Text>
             </View>
           )}
           ListEmptyComponent={<Text style={{ color: colorScheme === 'dark' ? 'white' : 'black' }}>No entries logged.</Text>}
