@@ -1,0 +1,125 @@
+# Scrum Meetings Minutes
+
+## September 18, 2024
+- Scrum meetings were held every Friday at 8 PM.
+- The meetings were concise (~15 minutes), with each member updating on their progress, any blockers, and upcoming tasks.
+- All team members actively participated and communicated any concerns or questions.
+- Meeting minutes were documented by Cole and shared in the team communication chat.
+
+## September 25, 2024
+- Scrum meeting updates focused on:
+    - Backend: Cole confirmed the progress of user authentication API.
+    - Frontend: Faware, Brian discussed wireframe designs and form prototypes.
+    - Testing: Tony and Isaac shared the test cases drafted for the initial backend API.
+- Action items:
+    - Cole to complete database schema.
+    - Faware, Brian to start with frontend layout implementation.
+
+## October 2, 2024
+- Scrum meeting updates focused on:
+    - Backend: Cole reported progress on implementing the API endpoints for user login.
+    - Frontend: Faware, Brian worked on the design of the landing page.
+    - Testing: Tony and Isaac began preparing unit tests for API routes.
+- Action items:
+    - Cole to finalize API route and start on database logic.
+    - Faware, Brian to continue frontend layout and start connecting API to UI.
+
+## October 4, 2024
+- Scrum meeting updates focused on:
+    - Backend: Cole confirmed the integration of user authentication API.
+    - Frontend: Faware, Brian completed the initial form design.
+    - Testing: Tony and Isaac tested initial endpoints and provided feedback.
+- Action items:
+    - Cole to address minor bugs in the authentication API.
+    - Faware, Brian to continue integrating UI components.
+    - Tony, Isaac to write regression test cases.
+
+## October 11, 2024
+- Scrum meeting updates focused on:
+    - Backend: Cole confirmed the progress of API rate-limiting tasks.
+    - Frontend: Faware and Brian focused on UI adjustments and bug fixes.
+    - Testing: Tony and Isaac discussed the preparation for more in-depth testing.
+- Action items:
+    - Cole to finalize the rate-limiting feature.
+    - Faware, Brian to improve UI responsiveness.
+    - Tony, Isaac to continue writing test cases and integrate them into the testing workflow.
+
+## October 18, 2024
+- Scrum meeting updates focused on:
+    - Backend: Cole discussed progress with the API rate-limiting feature.
+    - Frontend: Faware and Brian presented the landing page and user input forms.
+    - Testing: Tony and Isaac worked on testing the API integration with the frontend.
+- Action items:
+    - Cole to address bugs related to API rate-limiting.
+    - Faware, Brian to improve frontend performance.
+    - Tony, Isaac to finalize testing for frontend-backend integration.
+
+## October 25, 2024
+- Scrum meeting updates focused on:
+    - Backend: Cole confirmed rate limiting was working correctly, and database performance improvements were underway.
+    - Frontend: Faware, Brian continued optimizing UI and handling feedback from initial testing.
+    - Testing: Tony and Isaac worked on integration and regression testing.
+- Action items:
+    - Cole to implement further database optimizations.
+    - Faware, Brian to continue UI refinements.
+    - Tony, Isaac to finalize tests for all major user stories.
+
+## November 1, 2024
+- Scrum meeting updates focused on:
+    - Backend: Cole confirmed final testing of the backend APIs.
+    - Frontend: Faware and Brian completed most of the UI design.
+    - Testing: Tony and Isaac shared results from integration testing and discussed edge cases.
+- Action items:
+    - Cole to address minor bug fixes in API logic.
+    - Faware, Brian to finalize UI and improve overall frontend performance.
+    - Tony, Isaac to begin preparing final system tests.
+
+## November 8, 2024
+- Scrum meeting updates focused on:
+    - Backend: Cole confirmed the implementation of API rate-limiting.
+    - Frontend: Faware and Brian continued with UI improvements.
+    - Testing: Tony and Isaac worked on stress testing the system.
+- Action items:
+    - Cole to begin integration testing for backend services.
+    - Faware, Brian to finalize frontend UI.
+    - Tony, Isaac to prepare for release testing.
+
+## November 15, 2024
+- Scrum meeting updates focused on:
+    - Backend: Cole and Faware discussed integration issues between frontend and backend.
+    - Frontend: Faware and Brian focused on UI improvements.
+    - Testing: Tony and Isaac focused on edge-case testing and stressed the system's limits.
+- Action items:
+    - Cole to finish backend testing and integrate with frontend.
+    - Brian to finalize UI components.
+    - Tony and Isaac to finalize testing plans and focus on release testing.
+
+## November 22, 2024
+- Scrum meeting updates focused on:
+    - Backend: Cole confirmed backend integration with frontend was completed.
+    - Frontend: Faware, Brian worked on final UI fixes and responsive design.
+    - Testing: Tony and Isaac confirmed that final system tests were passed successfully.
+- Action items:
+    - Cole to prepare the final backend API documentation.
+    - Faware, Brian to prepare final presentation slides.
+    - Tony, Isaac to verify test results before release.
+
+## November 29, 2024
+- Scrum meeting updates focused on:
+    - Backend: Cole confirmed no new issues, backend is fully integrated.
+    - Frontend: Faware, Brian completed UI adjustments and finalized design.
+    - Testing: Tony and Isaac completed all final tests and provided feedback on the user experience.
+- Action items:
+    - Cole to finalize any minor backend adjustments.
+    - Faware, Brian to finalize frontend adjustments.
+    - Tony and Isaac to focus on preparing for presentation and final deployment.
+
+## December 6, 2024
+- Scrum meeting updates focused on:
+    - Backend: Cole confirmed no additional backend changes; the backend is stable.
+    - Frontend: Faware, Brian finalized the frontend design and ensured all UI components are functioning correctly.
+    - Testing: Tony and Isaac discussed final testing results and the presentation of the application.
+- Action items:
+    - All team members to finalize and practice their sections of the presentation.
+    - Presentation slides and demo ready for the upcoming demo session.
+    - Prepare a final report to submit to stakeholders.
