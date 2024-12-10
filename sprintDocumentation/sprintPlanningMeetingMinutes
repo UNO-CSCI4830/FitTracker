@@ -1,0 +1,46 @@
+# Sprint Planning Meeting Minutes
+
+## Sprint 1 Planning Meeting – 09/18/2024
+- Participants: Cole, Faware, Brian, Tony, Isaac
+- Backlog items reviewed:
+    - User authentication backend API (Assigned to Cole)
+    - Frontend UI components (Assigned to Faware, Brian)
+    - Testing strategy (Assigned to Tony, Isaac)
+- Sprint goals:
+    - Complete user authentication on backend.
+    - Implement basic landing page and user form on frontend.
+    - Create unit tests for authentication functionality.
+- Action items:
+    - Cole to finalize API design.
+    - Faware, Brian to start wireframes and form designs.
+    - Tony, Isaac to start writing test cases for authentication endpoints.
+
+## Sprint 2 Planning Meeting – 10/04/2024
+- Participants: Cole, Faware, Brian, Tony, Isaac
+- Backlog items reviewed:
+    - Rate limiting for the API (Assigned to Cole)
+    - Frontend performance optimization tasks (Assigned to Faware, Brian)
+    - Additional testing tasks for registration flow (Assigned to Tony, Isaac)
+- Sprint goals:
+    - Implement rate limiting on the backend.
+    - Optimize frontend performance.
+    - Continue writing integration and regression tests.
+- Action items:
+    - Cole to implement API rate limiting.
+    - Faware, Brian to optimize frontend load times.
+    - Tony, Isaac to test integration of frontend and backend and address issues.
+
+## Sprint 3 Planning Meeting – 11/08/2024
+- Participants: Cole, Faware, Brian, Tony, Isaac
+- Backlog items reviewed:
+    - Final API integration tasks (Assigned to Cole)
+    - Visual enhancements for frontend (Assigned to Faware, Brian)
+    - Final testing and bug fixes (Assigned to Tony, Isaac)
+- Sprint goals:
+    - Integrate backend API with frontend UI.
+    - Implement final UI visual tweaks.
+    - Perform thorough testing and ensure no bugs in the user flows.
+- Action items:
+    - Cole and Faware to work on API integration.
+    - Brian to finalize UI components.
+    - Tony, Isaac to finalize test scenarios and tests.
