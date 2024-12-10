@@ -6,6 +6,8 @@ import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import Stopwatch from '../stopwatch';
+
 
 export default function FitnessTrackerScreen() {
   const colorScheme = useColorScheme(); // Get color scheme
@@ -108,10 +110,8 @@ export default function FitnessTrackerScreen() {
             </View>
           </ThemedView>
 
-          <ThemedView style={styles.actionContainer}>
-            <Text style={styles.actionButton}>Track Activity</Text>
-          </ThemedView>
-        </SafeAreaView>
+          <Stopwatch />
+          </SafeAreaView>
       </ParallaxScrollView>
     </ThemedView>
   );
