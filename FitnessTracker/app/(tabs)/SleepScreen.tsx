@@ -33,16 +33,17 @@ const getStyles = (colorScheme: ColorScheme) => StyleSheet.create({
   },
   inputGroup: {
     marginBottom: 30,
+    width: '100%',
   },
   input: {
     height: 40,
-    borderColor: colorScheme === 'dark' ? '#555' : '#ccc', // Use dynamic borderColor
+    borderColor: colorScheme === 'dark' ? '#555' : '#ccc',
     borderWidth: 1,
     marginBottom: 10,
     paddingLeft: 10,
     borderRadius: 5,
     width: '100%',
-    color: colorScheme === 'dark' ? 'white' : 'black', // Use dynamic color
+    color: colorScheme === 'dark' ? 'white' : 'black',
   },
   actionButton: {
     paddingVertical: 10,
@@ -64,7 +65,7 @@ const getStyles = (colorScheme: ColorScheme) => StyleSheet.create({
   },
   datePicker: {
     height: 50,
-    width: '80%',
+    width: '100%', // Changed width to 100%
     marginTop: 20,
     alignSelf: 'center',
     marginBottom: 20,
@@ -86,9 +87,9 @@ const getStyles = (colorScheme: ColorScheme) => StyleSheet.create({
     marginBottom: 10,
     padding: 10,
     borderRadius: 5,
-    backgroundColor: colorScheme === 'dark' ? '#444' : '#f9f9f9', // Use dynamic backgroundColor
+    backgroundColor: colorScheme === 'dark' ? '#444' : '#f9f9f9',
     borderWidth: 2,
-    borderColor: colorScheme === 'dark' ? '#555' : '#ddd', // Use dynamic borderColor
+    borderColor: colorScheme === 'dark' ? '#555' : '#ddd',
     width: '100%',
   },
   totalHoursContainer: {

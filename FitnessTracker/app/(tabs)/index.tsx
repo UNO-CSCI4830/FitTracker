@@ -38,6 +38,7 @@ export default function FitnessTrackerScreen() {
 
   const [steps, setSteps] = useState(0);
   const [distance, setDistance] = useState(0.0);
+  const [caloriesBurned, setCaloriesBurned] = useState(0);
   const [calories, setCalories] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -152,7 +153,13 @@ export default function FitnessTrackerScreen() {
               setSteps(result.steps);
               setDistance(result.steps * 0.0007);
               setCalories(0);
+              const calculateCalories = () => {
+                const estimatedCalories = result.steps * 0.04; // Example formula
+                setCaloriesBurned(estimatedCalories);
+              };
+              calculateCalories(); // Call when steps update
             });
+
 
             return () => {
               console.log('Unsubscribing from step count updates.');
@@ -209,8 +216,8 @@ export default function FitnessTrackerScreen() {
               <Text style={styles.statValue}>{distance.toFixed(2)} km</Text>
             </View>
             <View style={styles.statItem}>
-              <Text style={styles.statLabel}>Calories</Text>
-              <Text style={styles.statValue}>{calories}</Text>
+              <Text style={styles.statLabel}>Calories Burned</Text>
+              <Text style={styles.statValue}>{caloriesBurned.toFixed(2)}</Text>
             </View>
           </ThemedView>
 
