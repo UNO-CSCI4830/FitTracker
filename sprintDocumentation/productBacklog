@@ -1,0 +1,28 @@
+# Product Backlog Overview
+
+## September 18, 2024
+- Initial backlog items were created and prioritized. The focus was on defining the major features for the backend and frontend, including:
+    - Backend: User authentication, API endpoints, Database design (Assigned to Cole)
+    - Frontend: User Interface (UI) design, Landing page, User input forms (Assigned to Faware, Brian, Isaac)
+    - Testing: Test cases for user stories (Assigned to Tony)
+
+## October 4, 2024
+- Sprint 1 Backlog refinement:
+    - Added tasks for integrating user authentication with the frontend (Assigned to Cole, Faware).
+    - Included bug fixes and UI adjustments (Assigned to Brian, Isaac).
+    - Testing tasks for new features were updated (Assigned to Tony).
+    - Sprint 1 Backlog reviewed in sprint planning meeting on 10/04/2024.
+
+## November 8, 2024
+- Sprint 2 Backlog:
+    - API rate limiting tasks were added (Assigned to Cole).
+    - Frontend performance optimizations included (Assigned to Faware, Isaac).
+    - Additional testing scenarios for user registration (Assigned to Tony).
+    - Sprint 2 Backlog reviewed in sprint planning meeting on 11/08/2024.
+
+## December 2024
+- Sprint 2 Backlog refinement:
+    - Final integration tasks for backend-frontend communication (Assigned to Cole and Faware).
+    - Frontend visual enhancements (Assigned to Brian, Isaac).
+    - Tests and bug fixes (Assigned to Tony).
+    - Sprint 2 Backlog reviewed in sprint planning meeting on 11/29/2024.
