@@ -1,0 +1,285 @@
+Assignment 2: Software Requirements
+
+Team: Project Group 6
+
+Project Title: FitTracker
+
+Members: Cole Johnson, Brian Mayorga, Fawaze Ouro-Koura, Isaac Sarmiento-Herrera, Tony Thompson
+
+
+Stakeholders | Requirements
+Users | FR1 - FR15, FR17 - FR 19
+Servers | FR20
+All | FR16
+
+
+Functional
+
+FR1. User Progress Tracking
+Goal: Users can track their daily progress.
+Stakeholders: Users
+Description: The app will log and display users daily exercise, sleep, and diet intake.
+Origin: 1st meeting
+
+
+Version: 1.0
+Date: 10/1/2024
+Priority: 1
+
+
+
+
+FR2. 30-Day Progress Graph
+Goal: Users can view their progress over the past month.
+Stakeholders: Users
+Description: This app will provide a graphical representation of their progress from the last 30 days.
+Origin: 2nd meeting
+
+
+Version: 1.0
+Date: 10/1/2024
+Priority: 2
+
+
+
+
+FR3. Input Exercise Data
+Goal: Users can input their exercise activities.
+Stakeholders: Users
+Description:  The user will be allowed to enter their workouts, including type, duration, and sets.
+Origin: 1st  meeting
+
+
+Version: 1.0
+Date: 10/1/2024
+Priority: 3
+
+
+
+
+FR4. Input Calorie Data
+Goal: Users can track their daily calorie/protein intake.
+Stakeholders: Users
+Description: This app will allow the user to input foods that they consumed to calculate calories.
+Origin: 1st  meeting
+
+
+Version: 1.0
+Date: 10/1/2024
+Priority: 3
+
+
+
+
+FR5. Sleep Tracking
+Goal: Users can log and monitor their sleep patterns.
+Stakeholders: Users
+Description: The app will allow users to input sleep times and durations to figure out the sleep quality.
+Origin: 1st meeting
+
+
+Version: 1.0
+Date: 10/1/2024
+Priority: 2
+
+
+
+
+FR6. Bottom Navigation Tabs
+Goal: Users can easily access different parts of the app
+Stakeholders: Users
+Description: The app will have a tabbed navigation system for quick access at the bottom.
+Origin: 2nd meeting
+
+
+Version: 1.0
+Date: 10/1/2024
+Priority: 3
+
+
+
+
+
+FR7. Time of day greeting
+Goal: User will be greeted by program depending on time of day
+Stakeholders: User
+Description: If the user opens the application in the morning, afternoon, or at night. The application will greet the user differently (ex. Mornings - “Good morning [user’s name], here’s your progress:”). Program will be able to detect the time of day.
+Origin: 2nd meeting
+
+
+Version: 1.0
+Date: 10/1/2024
+Priority: 1
+
+
+
+
+FR8. Accurate Wellness Suggestions
+Goal: User will have accurate suggestions catered to them
+Stakeholders: Users
+Description: Program will be able to provide accurate wellness recommendations provided by the user’s data.
+Origin: 2nd meeting
+
+
+Version:1.0
+Date:10/1/2024
+Priority: 4
+
+
+
+
+FR9. Touch Gestures
+Goal: Users can scroll by swiping their screen.
+Stakeholders: Users
+Description: Program can register user touch inputs to know to scroll up or down on a given screen.
+Origin: 2nd meeting
+
+
+Version: 1.0
+Date: 10/1/2024
+Priority: 3
+
+
+
+
+FR10. Timer
+Goal: User can input the amount of seconds, minutes, hours, or initiate a stopwatch.
+Stakeholders: Users
+Description: Ask users to set or initiate a time cycle/duration for said exercise(s) or workout.
+Origin: 2nd meeting
+
+
+Version: 1.0
+Date: 10/1/2024
+Priority: 2
+
+
+
+
+FR11. Notifications for Missed Goals
+Goal:Users will receive notifications if they miss daily goals (exercise, sleep, or diet).
+Stakeholders: Users
+Description:The app will send reminders to users when they fail to meet their set fitness goals for the day.
+Origin: 2nd meeting
+
+
+Version: 1.0
+Date: 10/1/2024
+Priority: 2
+
+
+
+
+FR12. Custom Goal Setting
+Goal:Users can set custom fitness goals.
+Stakeholders: Users
+Description:The app will allow users to define and customize their daily fitness, nutrition, or sleep goals.
+Origin: 2nd meeting
+
+
+Version: 1.0
+Date: 10/1/2024
+Priority: 3
+
+
+FR13.Workout Routines Library
+Goal:Users can access pre-made workout routines.
+Stakeholders: Users
+Description:The app will provide a library of workout routines categorized by fitness goals (e.g., strength training, cardio, flexibility) that users can follow and log.
+Origin: 2nd meeting
+
+
+Version: 1.0
+Date: 10/1/2024
+Priority: 2
+
+
+FR14.Personalized Dashboard
+Goal:Users will have a personalized dashboard view.
+Stakeholders: Users
+Description: Each user will be able to view a customized dashboard displaying their key fitness stats, goals, and progress.
+Origin: 2nd meeting
+
+
+Version: 1.0
+Date: 10/1/2024
+Priority: 4
+
+
+FR15. Goal Achievement Badges
+Goal:Users can earn badges for achieving fitness milestones.
+Stakeholders: Users
+Description:The app will reward users with virtual badges for completing specific fitness goals, such as reaching a target number of workouts or achieving a personal best.
+Origin: 2nd meeting
+
+
+Version: 1.0
+Date: 10/1/2024
+Priority: 5
+
+Non Functional
+
+FR16.Performance Requirements
+Goal: Ensure the app runs smoothly without lag.
+Stakeholders: All
+Description: The app should load pages and process inputs within 1-2 seconds to provide a seamless user experience.
+Origin: 2nd Meeting
+
+
+Version: 1.0
+Date: 10/1/2024
+Priority: 1
+
+
+
+FR17. Usability Requirements
+Goal: Make the app intuitive and easy to use.
+Stakeholders: Users
+Description: The app should be easy to navigate for users of all ages and technical expertise, with clear instructions and minimal learning curve
+Origin: 2nd meeting
+
+
+Version: 1.0
+Date: 10/1/2024
+Priority: 2
+
+
+
+FR18. Color Scheme
+Goal: User can change the color theme of the FitnessTrack application.
+Stakeholders: Users
+Description: User can enable different display colors, e.g., dark/light/normal/(color-blind mode).
+Origin: September 27th, 2024
+
+
+Version: 1.0
+Date: 10/1/2024
+Priority: 1
+
+
+
+FR19. Compatibility Requirements
+Goal: Ensure cross-platform functionality.
+Stakeholders: Users
+Description: The application should work on IOS and Android devices.
+Origin: 1st meeting
+
+
+Version: 1.0
+Date: 9/30/2024
+Priority:1
+
+
+
+FR20. Security Requirements
+Goal: Keep the user data protected.
+Stakeholders: Server
+Description: Data must be stored securely and comply with privacy regulations.
+Origin: 1st meeting
+
+
+Version: 1.0
+Date: 9/30/2024
+Priority: 1
+
+
