@@ -1,25 +1,21 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, Alert, FlatList, StyleSheet, TouchableOpacity, ColorScheme } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useColorScheme } from 'react-native';
-const ExerciseScreen = () => {
-  const [workout, setWorkout] = useState('');
-  const [reps, setReps] = useState('');
-  const [sets, setSets] = useState('');
-  const [exerciseLog, setExerciseLog] = useState<any[]>([]);
-  const [selectedDate, setSelectedDate] = useState(new Date().toDateString());
-  const colorScheme = useColorScheme();
+import { useUser } from './userContext';
+import { db } from '../../firebaseConfig';
+import { collection, addDoc, query, where, getDocs, setDoc, doc, getDoc } from 'firebase/firestore';
 
 const getActionButtonStyles = (colorScheme: ColorScheme) => ({
   paddingVertical: 10,
   paddingHorizontal: 30,
   borderRadius: 5,
-  backgroundColor: colorScheme === 'dark' ? '#555' : '#333', // Lighter gray for dark mode
-  marginTop: 20,
+  backgroundColor: colorScheme === 'dark' ? '#555' : '#333',
+  marginTop: 5,
   alignSelf: 'center',
   borderWidth: 1,
-  borderColor: colorScheme === 'dark' ? '#888' : '#ccc', // Subtle border for dark mode
+  borderColor: colorScheme === 'dark' ? '#888' : '#ccc',
 });
 
 const getStyles = (colorScheme: ColorScheme) => StyleSheet.create({
@@ -38,28 +34,15 @@ const getStyles = (colorScheme: ColorScheme) => StyleSheet.create({
   inputGroup: {
     marginBottom: 30,
   },
-  goalGroup: {
-    width: '80%',
-    marginBottom: 30,
-  },
-  goalTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 10,
-  },
   input: {
+    height: 40,
+    borderColor: colorScheme === 'dark' ? '#555' : '#ccc',
     borderWidth: 1,
-    borderColor: colorScheme === 'dark' ? '#555' : '#ccc', // Dynamic border color
-    padding: 10,
     marginBottom: 10,
+    paddingLeft: 10,
     borderRadius: 5,
-    width: '100%', 
-    color: colorScheme === 'dark' ? 'white' : 'black', // Dynamic text color
-  },
-  datePicker: {
-    height: 50,
-    width: '80%',
-    marginBottom: 20,
+    width: '100%',
+    color: colorScheme === 'dark' ? 'white' : 'black',
   },
   actionButton: {
     paddingVertical: 10,
@@ -73,83 +56,193 @@ const getStyles = (colorScheme: ColorScheme) => StyleSheet.create({
     textAlign: 'center',
     fontSize: 16,
   },
-  goalMessageContainer: {
-    marginTop: 20,
-    padding: 10,
-    borderRadius: 10,
-    backgroundColor: colorScheme === 'dark' ? '#444' : '#f2f2f2',
-    alignItems: 'center',
-    alignSelf: 'center',
+  datePicker: {
+    height: 50,
     width: '80%',
-  },
-  goalText: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: colorScheme === 'dark' ? 'white' : '#333',
+    marginTop: 20,
+    alignSelf: 'center',
+    marginBottom: 20,
   },
   logEntriesContainer: {
     marginTop: 20,
     width: '80%',
+    alignSelf: 'center',
+    flex: 1,
   },
   logsTitle: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: 'bold',
-    marginBottom: 10,
+    marginTop: 20,
+    marginBottom: 20,
+    textAlign: 'center',
   },
   logItem: {
     marginBottom: 10,
     padding: 10,
     borderRadius: 5,
     backgroundColor: colorScheme === 'dark' ? '#444' : '#f9f9f9',
+    borderWidth: 2,
+    borderColor: colorScheme === 'dark' ? '#555' : '#ddd',
+    width: '100%',
+  },
+  totalMinutesContainer: {
+    marginTop: 20,
+    padding: 10,
+    borderRadius: 5,
+    backgroundColor: colorScheme === 'dark' ? '#444' : '#f0f0f0',
     borderWidth: 1,
     borderColor: colorScheme === 'dark' ? '#555' : '#ddd',
+    width: '100%',
+    alignItems: 'center',
   },
+  totalMinutesText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: colorScheme === 'dark' ? 'white' : 'black',
+  },
+  goalContainer: {
+    padding: 15,
+    marginBottom: 20,
+    borderRadius: 5,
+    backgroundColor: colorScheme === 'dark' ? '#444' : '#f5f5f5',
+    width: '100%',
+    alignItems: 'center',
+  },
+  goalText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: colorScheme === 'dark' ? 'white' : 'black',
+  },
+  goalStatusText: {
+    fontSize: 16,
+    marginTop: 5,
+    color: colorScheme === 'dark' ? 'lightgreen' : 'darkgreen',
+  }
 });
 
-const ExerciseScreen = () => {
-  const [workout, setWorkout] = useState('');
-  const [reps, setReps] = useState('');
-  const [sets, setSets] = useState('');
-  const [exerciseLog, setExerciseLog] = useState<any[]>([]);
-  const [selectedDate, setSelectedDate] = useState(new Date().toDateString());
+type ExerciseEntry = {
+  id: string;
+  exerciseName: string;
+  minutes: number;
+  date: string;
+};
+
+const ExerciseScreen: React.FC = () => {
+  const { user } = useUser();
+  const exerciseLogsCollection = collection(db, "exerciseLog");
+  const exerciseGoalsCollection = collection(db, "exerciseGoals");
+  const [exerciseName, setExerciseName] = useState<string>('');
+  const [minutes, setMinutes] = useState<string>('');
+  const [exerciseLog, setExerciseLog] = useState<ExerciseEntry[]>([]);
+  const [selectedDate, setSelectedDate] = useState<string>(new Date().toDateString());
+  const [savedExerciseGoal, setSavedExerciseGoal] = useState<string>('');
+  const [goalInput, setGoalInput] = useState<string>('');
+  const [goalStatus, setGoalStatus] = useState<string>('');
+  const [goalStatusColor, setGoalStatusColor] = useState<string>('green');
+  const [totalMinutes, setTotalMinutes] = useState<number>(0);
   const colorScheme = useColorScheme();
+  const styles = getStyles(colorScheme);
 
-  // New state for fitness goal
-  const [goalReps, setGoalReps] = useState('');
-  const [goalSets, setGoalSets] = useState('');
-
-  const handleLogExercise = () => {
-    if (!workout || !reps || !sets) {
-      Alert.alert('Error', 'Please fill out all fields');
-      return;
-    }
-
-    const numericReps = parseInt(reps, 10);
-    const numericSets = parseInt(sets, 10);
-
-    if (isNaN(numericReps) || numericReps < 0 || isNaN(numericSets) || numericSets < 0) {
-      Alert.alert('Error', 'Please enter valid numbers for reps and sets');
-      return;
-    }
-
-    const newEntry = {
-      id: Date.now().toString(),
-      workout,
-      reps: numericReps,
-      sets: numericSets,
-      date: selectedDate,
+  useEffect(() => {
+    const fetchExerciseLogs = async () => {
+      if (user?.uid) {
+        const exerciseLogsQuery = query(exerciseLogsCollection, where("uid", "==", user.uid));
+        const querySnapshot = await getDocs(exerciseLogsQuery);
+        const logs: ExerciseEntry[] = [];
+        querySnapshot.forEach((doc) => {
+          logs.push({
+            id: doc.id,
+            exerciseName: doc.data().exerciseName,
+            minutes: doc.data().minutes,
+            date: doc.data().date,
+          });
+        });
+        setExerciseLog(logs);
+      }
     };
 
-    setExerciseLog((prevLog) => [...prevLog, newEntry]);
+    const fetchExerciseGoal = async () => {
+      if (user?.uid) {
+        const goalDoc = await getDoc(doc(exerciseGoalsCollection, user.uid));
+        if (goalDoc.exists()) {
+          const goal = goalDoc.data()?.goal;
+          setSavedExerciseGoal(goal);
+        }
+      }
+    };
 
-    Alert.alert('Exercise Logged', `Workout: ${workout}, Reps: ${numericReps}, Sets: ${numericSets}, Date: ${selectedDate}`);
-    setWorkout('');
-    setReps('');
-    setSets('');
+    fetchExerciseLogs();
+    fetchExerciseGoal();
+  }, [user?.uid]);
+
+  useEffect(() => {
+    const total = exerciseLog
+      .filter((entry) => entry.date === selectedDate)
+      .reduce((sum, entry) => sum + entry.minutes, 0);
+    setTotalMinutes(total);
+
+    if (savedExerciseGoal && total >= parseInt(savedExerciseGoal, 10)) {
+      setGoalStatus(`Goal of ${savedExerciseGoal} minutes met!`);
+      setGoalStatusColor('green');
+    } else if (savedExerciseGoal) {
+      setGoalStatus(`Goal of ${savedExerciseGoal} minutes not met. Keep going!`);
+      setGoalStatusColor('red');
+    }
+  }, [selectedDate, exerciseLog, totalMinutes, savedExerciseGoal]);
+
+  const handleLogExercise = async () => {
+    if (!exerciseName || !minutes) {
+      Alert.alert('Error', 'Please enter both exercise name and minutes');
+      return;
+    }
+
+    const numericMinutes = parseInt(minutes, 10);
+    if (isNaN(numericMinutes) || numericMinutes < 0) {
+      Alert.alert('Error', 'Please enter a valid number for minutes');
+      return;
+    }
+
+    try {
+      if (user?.uid) {
+        await addDoc(exerciseLogsCollection, {
+          uid: user.uid,
+          exerciseName,
+          minutes: numericMinutes,
+          date: selectedDate,
+        });
+
+        setExerciseLog((prevLogs) => [
+          ...prevLogs,
+          { id: Date.now().toString(), exerciseName, minutes: numericMinutes, date: selectedDate },
+        ]);
+      }
+    } catch (error) {
+      Alert.alert('Error', 'Failed to save exercise log.');
+    }
+
+    setExerciseName('');
+    setMinutes('');
   };
 
-  const today = new Date().toDateString();
-  const todayLog = exerciseLog.filter((entry) => entry.date === selectedDate);
+  const handleSaveGoal = async () => {
+    if (!goalInput) {
+      Alert.alert('Error', 'Please set an exercise goal.');
+      return;
+    }
+
+    try {
+      if (user?.uid) {
+        const goalRef = doc(exerciseGoalsCollection, user.uid);
+        await setDoc(goalRef, { goal: goalInput, uid: user.uid });
+
+        setSavedExerciseGoal(goalInput);
+        setGoalInput('');
+      }
+    } catch (error) {
+      Alert.alert('Error', 'Failed to save goal.');
+    }
+  };
+
 
   const dateOptions = Array.from({ length: 7 }, (_, i) => {
     const date = new Date();
@@ -157,97 +250,82 @@ const ExerciseScreen = () => {
     return date.toDateString();
   });
 
-  const handleNumericInputChange = (text: string, setter: React.Dispatch<React.SetStateAction<string>>) => {
-    if (/^\d*$/.test(text)) {
-      setter(text);
-    }
-  };
-
-  // Default message if goal hasn't been set
-  const goalMessage = goalReps && goalSets ? `Your Goal: ${goalReps} reps x ${goalSets} sets` : 'Goal hasn\'t been set yet. Make one!';
-
-  const styles = getStyles(colorScheme); // Get the styles based on colorScheme
+  const filteredLogs = exerciseLog.filter((log) => log.date === selectedDate);
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colorScheme === 'dark' ? '#333' : '#f5f5f5' }]}>
-      <View style={{ flex: 1, justifyContent: 'space-between' }}>
-        <Text style={[styles.title, { color: colorScheme === 'dark' ? 'white' : 'black' }]}>Log Your Exercise</Text>
+      <View style={styles.container}>
+        <Text style={styles.title}>Exercise Tracker</Text>
+
+        {/* Exercise Goal Section */}
+        <View style={styles.goalContainer}>
+          <Text style={styles.goalText}>Your Exercise Goal</Text>
+          {savedExerciseGoal ? (
+            <Text style={[styles.goalStatusText, { color: goalStatusColor }]}>
+              {goalStatus}
+            </Text>
+          ) : (
+            <Text style={styles.goalStatusText}>Set your exercise goal!</Text>
+          )}
+        </View>
 
         <View style={styles.inputGroup}>
           <TextInput
+            placeholder="Set Exercise Goal (minutes)"
             style={styles.input}
-            placeholder="Workout Name"
-            value={workout}
-            onChangeText={setWorkout}
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Reps"
-            value={reps}
             keyboardType="numeric"
-            onChangeText={(text) => handleNumericInputChange(text, setReps)}
+            value={goalInput}
+            onChangeText={setGoalInput}
           />
-          <TextInput
-            style={styles.input}
-            placeholder="Sets"
-            value={sets}
-            keyboardType="numeric"
-            onChangeText={(text) => handleNumericInputChange(text, setSets)}
-          />
+          <TouchableOpacity
+            style={getActionButtonStyles(colorScheme)}
+            onPress={handleSaveGoal}
+          >
+            <Text style={styles.buttonText}>Save Goal</Text>
+          </TouchableOpacity>
         </View>
 
-        <Picker
-          selectedValue={selectedDate}
-          style={styles.datePicker}
-          onValueChange={(itemValue) => setSelectedDate(itemValue)}
-        >
-          {dateOptions.map((date) => (
-            <Picker.Item key={date} label={date} value={date} />
-          ))}
-        </Picker>
-
-        <View style={styles.goalGroup}>
-          <Text style={[styles.goalTitle, { color: colorScheme === 'dark' ? 'white' : 'black' }]}>Set Your Fitness Goal</Text>
+        <View style={styles.inputGroup}>
           <TextInput
+            placeholder="Exercise Name"
             style={styles.input}
-            placeholder="Goal Reps"
-            value={goalReps}
-            keyboardType="numeric"
-            onChangeText={(text) => handleNumericInputChange(text, setGoalReps)}
+            value={exerciseName}
+            onChangeText={setExerciseName}
           />
           <TextInput
+            placeholder="Minutes"
             style={styles.input}
-            placeholder="Goal Sets"
-            value={goalSets}
             keyboardType="numeric"
-            onChangeText={(text) => handleNumericInputChange(text, setGoalSets)}
+            value={minutes}
+            onChangeText={setMinutes}
           />
+          <Picker
+            selectedValue={selectedDate}
+            style={styles.datePicker}
+            onValueChange={(itemValue) => setSelectedDate(itemValue)}
+          >
+            {dateOptions.map((date, index) => (
+              <Picker.Item key={index} label={date} value={date} />
+            ))}
+          </Picker>
+          <TouchableOpacity style={getActionButtonStyles(colorScheme)} onPress={handleLogExercise}>
+            <Text style={styles.buttonText}>Log Exercise</Text>
+          </TouchableOpacity>
         </View>
 
-        <TouchableOpacity style={getActionButtonStyles(colorScheme)} onPress={handleLogExercise}>
-          <Text style={styles.buttonText}>Log Exercise</Text>
-        </TouchableOpacity>
+        <FlatList
+          data={filteredLogs}
+          renderItem={({ item }) => (
+            <View style={styles.logItem}>
+              <Text>{item.exerciseName} - {item.minutes} minutes</Text>
+            </View>
+          )}
+          keyExtractor={(item) => item.id}
+        />
 
-        <View style={styles.goalMessageContainer}>
-          <Text style={styles.goalText}>{goalMessage}</Text>
-        </View>
-
-        <View style={styles.logEntriesContainer}>
-          <Text style={[styles.logsTitle, { color: colorScheme === 'dark' ? 'white' : 'black' }]}>Today's Exercise Log</Text>
-
-          <FlatList
-            data={todayLog}
-            keyExtractor={(item) => item.id}
-            renderItem={({ item }) => (
-              <View style={styles.logItem}>
-                <Text style={{ color: colorScheme === 'dark' ? 'white' : 'black' }}>Workout: {item.workout}</Text>
-                <Text style={{ color: colorScheme === 'dark' ? 'white' : 'black' }}>Reps: {item.reps}</Text>
-                <Text style={{ color: colorScheme === 'dark' ? 'white' : 'black' }}>Sets: {item.sets}</Text>
-                <Text style={{ color: colorScheme === 'dark' ? 'white' : 'black' }}>Date: {item.date}</Text>
-              </View>
-            )}
-            ListEmptyComponent={<Text style={{ color: colorScheme === 'dark' ? 'white' : 'black' }}>No entries logged for today.</Text>}
-          />
+        {/* Total Minutes Tracker */}
+        <View style={styles.totalMinutesContainer}>
+          <Text style={styles.totalMinutesText}>Total Minutes: {totalMinutes} minutes</Text>
         </View>
       </View>
     </SafeAreaView>
