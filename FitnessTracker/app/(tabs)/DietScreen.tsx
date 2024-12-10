@@ -96,33 +96,37 @@ const DietScreen: React.FC = () => {
   const [goalCalories, setGoalCalories] = useState<string>('');
   const [goalStatus, setGoalStatus] = useState<string>('');
   const [goalStatusColor, setGoalStatusColor] = useState<string>('green');
+  const [goalSet, setGoalSet] = useState(false); 
+
   const colorScheme = useColorScheme();
   const styles = getStyles(colorScheme);
-  const [goalSet, setGoalSet] = useState(false);
 
   const handleLogDiet = () => {
     if (!foodItem || !calories) {
       Alert.alert('Error', 'Please fill out both fields');
       return;
     }
-  
+
     const numericCalories = parseInt(calories, 10);
     if (isNaN(numericCalories) || numericCalories < 0) {
       Alert.alert('Error', 'Please enter a valid number for calories');
       return;
     }
-  
+
     const newEntry: DietEntry = {
       id: Date.now().toString(),
       foodItem,
       calories: numericCalories,
       date: selectedDate,
     };
-  
-    setDietLog((prevLog) => [...prevLog, newEntry]); // Update dietLog using a callback function
-  
-    const totalCalories = [...dietLog, newEntry].reduce((sum, entry) => sum + entry.calories, 0); // Calculate total calories here
-  
+
+    const updatedLog = [...dietLog, newEntry];
+    setDietLog(updatedLog);
+
+    // Calculate total calories for the selected date
+    const todayLog = updatedLog.filter(entry => entry.date === selectedDate);
+    const totalCalories = todayLog.reduce((sum, entry) => sum + entry.calories, 0);
+
     if (goalCalories && totalCalories <= parseInt(goalCalories, 10)) {
       setGoalStatus('Goal met!');
       setGoalStatusColor('green');
@@ -130,12 +134,12 @@ const DietScreen: React.FC = () => {
       setGoalStatus('Goal not met. Try again tomorrow!');
       setGoalStatusColor('red');
     }
-  
+
     Alert.alert('Diet Logged', `Food: ${foodItem}, Calories: ${numericCalories}, Date: ${selectedDate}`);
     setFoodItem('');
     setCalories('');
-  
-    setGoalSet(true);
+
+    setGoalSet(true); // Set goalSet to true after logging the first entry
   };
 
   const handleCaloriesChange = (text: string) => {
@@ -163,67 +167,78 @@ const DietScreen: React.FC = () => {
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colorScheme === 'dark' ? '#333' : '#f5f5f5' }]}> 
       <View style={{ flex: 1, justifyContent: 'space-between' }}>
-        <Text style={[styles.title, { color: colorScheme === 'dark' ? 'white' : 'black' }]}>Log Diet</Text>
+      <Text style={[styles.title, { color: colorScheme === 'dark' ? 'white' : 'black' }]}>Log Diet</Text>
 
-        <View style={styles.inputGroup}>
-        {!goalSet && ( // Conditionally render the goal input 
-          <TextInput
-            placeholder="Set Your Goal (Calories)"
-            style={styles.input}
-            keyboardType="numeric"
-            value={goalCalories}
-            onChangeText={handleGoalChange}
-          />
+      <View style={styles.inputGroup}>
+      {!goalSet && ( // Conditionally render the goal input 
+      <TextInput
+        placeholder="Set Your Goal (Calories)"
+        style={styles.input}
+        keyboardType="numeric"
+        value={goalCalories}
+        onChangeText={handleGoalChange}
+      />
+    )}
+        {goalCalories && (
+          <Text style={[styles.goalStatus, { color: goalStatusColor }]}>
+            {goalStatus}
+          </Text>
         )}
 
-          <TextInput
-            placeholder="Food Item"
-            style={styles.input}
-            value={foodItem}
-            onChangeText={setFoodItem}
-          />
-          <TextInput
-            placeholder="Calories"
-            style={styles.input}
-            keyboardType="numeric"
-            value={calories}
-            onChangeText={handleCaloriesChange}
-          />
+        <TextInput
+          placeholder="Food Item"
+          style={styles.input}
+          value={foodItem}
+          onChangeText={setFoodItem}
+        />
+        <TextInput
+          placeholder="Calories"
+          style={styles.input}
+          keyboardType="numeric"
+          value={calories}
+          onChangeText={handleCaloriesChange}
+        />
+      </View>
+
+      <TouchableOpacity style={getActionButtonStyles(colorScheme)} onPress={handleLogDiet}> 
+    <Text style={styles.buttonText}>Log Diet</Text>
+  </TouchableOpacity>
+
+  <Picker
+    selectedValue={selectedDate}
+    style={styles.datePicker}
+    onValueChange={(itemValue) => setSelectedDate(itemValue)}
+  >
+    {dateOptions.map((date) => (
+      <Picker.Item key={date} label={date} value={date} />
+    ))}
+  </Picker>
+
+  <View style={styles.logEntriesContainer}>
+    <Text style={styles.logsTitle}>Diet Log</Text>
+    <FlatList
+      data={todayLog} 
+      keyExtractor={(item) => item.id}
+      renderItem={({ item }) => (
+        <View style={styles.logItem}> 
+          <Text style={{ color: colorScheme === 'dark' ? 'white' : 'black' }}>Food: {item.foodItem}</Text>
+          <Text style={{ color: colorScheme === 'dark' ? 'white' : 'black' }}>Calories: {item.calories}</Text>
+          <Text style={{ color: colorScheme === 'dark' ? 'white' : 'black' }}>Date: {item.date}</Text>
         </View>
+      )}
+      ListEmptyComponent={<Text style={{ color: colorScheme === 'dark' ? 'white' : 'black' }}>No entries logged.</Text>}
+    />
+  </View>
 
-        <TouchableOpacity style={getActionButtonStyles(colorScheme)} onPress={handleLogDiet}>
-          <Text style={styles.buttonText}>Log Diet</Text> 
-        </TouchableOpacity>
+  {goalSet && ( // Conditionally render the goal text
+    <Text style={styles.totalCalories}>
+      Today's Calorie Goal: {goalCalories} 
+    </Text>
+  )}
 
-        <Picker
-          selectedValue={selectedDate}
-          style={styles.datePicker}
-          onValueChange={(itemValue) => setSelectedDate(itemValue)}
-        >
-          {dateOptions.map((date) => (
-            <Picker.Item key={date} label={date} value={date} />
-          ))}
-        </Picker>
-
-        <View style={styles.logEntriesContainer}>
-          <Text style={styles.logsTitle}>Diet Log</Text>
-          <FlatList
-            data={todayLog}
-            keyExtractor={(item) => item.id}
-            renderItem={({ item }) => (
-              <View style={styles.logItem}> 
-                <Text style={{ color: colorScheme === 'dark' ? 'white' : 'black' }}>Food: {item.foodItem}</Text>
-                <Text style={{ color: colorScheme === 'dark' ? 'white' : 'black' }}>Calories: {item.calories}</Text>
-                <Text style={{ color: colorScheme === 'dark' ? 'white' : 'black' }}>Date: {item.date}</Text>
-              </View>
-            )}
-            ListEmptyComponent={<Text style={{ color: colorScheme === 'dark' ? 'white' : 'black' }}>No entries logged.</Text>}
-          />
-        </View>
-
-        <Text style={styles.totalCalories}>
-          Total Calories: {todayLog.reduce((sum, entry) => sum + entry.calories, 0)}
-        </Text>
+  <Text style={styles.totalCalories}> 
+    Total Calories: {todayLog.reduce((sum, entry) => sum + entry.calories, 0)} 
+  </Text>
       </View>
     </SafeAreaView>
   );
