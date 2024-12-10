@@ -1,6 +1,6 @@
 # Sprint Retrospective Meeting Minutes
 
-## Sprint 1 Retrospective – 09/30/2024
+## Sprint 1 Retrospective – 10/04/2024
 - Participants: Cole, Faware, Brian, Tony, Isaac
 - What went well:
     - Team members collaborated well despite different working styles.
@@ -14,7 +14,7 @@
     - Cole to improve API documentation for easier integration.
     - Tony and Isaac to start writing integration test cases earlier.
 
-## Sprint 2 Retrospective – 11/20/2024 (Did after Presentation 3)
+## Sprint 2 Retrospective – 11/08/2024
 - Participants: Cole, Faware, Brian, Tony, Isaac
 - What went well:
     - API rate limiting was implemented smoothly.
@@ -25,4 +25,4 @@
     - Some confusion arose during API integration.
 - Action items:
     - Cole and Faware to ensure better communication for integration tasks.
-    - Tony and Isaac to focus on edge cases and stress tests during the rest of sprint.
+    - Tony and Isaac to focus on edge cases and stress tests during the next sprint.
