@@ -3,6 +3,13 @@ import { View, Text, TextInput, Alert, FlatList, StyleSheet, TouchableOpacity, C
 import { Picker } from '@react-native-picker/picker';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useColorScheme } from 'react-native';
+const ExerciseScreen = () => {
+  const [workout, setWorkout] = useState('');
+  const [reps, setReps] = useState('');
+  const [sets, setSets] = useState('');
+  const [exerciseLog, setExerciseLog] = useState<any[]>([]);
+  const [selectedDate, setSelectedDate] = useState(new Date().toDateString());
+  const colorScheme = useColorScheme();
 
 const getActionButtonStyles = (colorScheme: ColorScheme) => ({
   paddingVertical: 10,
