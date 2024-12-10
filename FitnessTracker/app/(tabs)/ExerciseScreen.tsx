@@ -3,7 +3,7 @@ import { View, Text, TextInput, Alert, FlatList, StyleSheet, TouchableOpacity, C
 import { Picker } from '@react-native-picker/picker';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useColorScheme } from 'react-native';
-import { useUser } from './userContext'; // Import the useUser hook
+import { useUser } from './userContext';
 import { db } from '../../firebaseConfig';
 import { collection, addDoc, query, where, getDocs, setDoc, doc, getDoc } from 'firebase/firestore';
 
@@ -128,15 +128,15 @@ type ExerciseEntry = {
 };
 
 const ExerciseScreen: React.FC = () => {
-  const { user } = useUser(); // Get the current user from context
+  const { user } = useUser();
   const exerciseLogsCollection = collection(db, "exerciseLog");
   const exerciseGoalsCollection = collection(db, "exerciseGoals");
   const [exerciseName, setExerciseName] = useState<string>('');
   const [minutes, setMinutes] = useState<string>('');
   const [exerciseLog, setExerciseLog] = useState<ExerciseEntry[]>([]);
   const [selectedDate, setSelectedDate] = useState<string>(new Date().toDateString());
-  const [savedExerciseGoal, setSavedExerciseGoal] = useState<string>(''); 
-  const [goalInput, setGoalInput] = useState<string>(''); 
+  const [savedExerciseGoal, setSavedExerciseGoal] = useState<string>('');
+  const [goalInput, setGoalInput] = useState<string>('');
   const [goalStatus, setGoalStatus] = useState<string>('');
   const [goalStatusColor, setGoalStatusColor] = useState<string>('green');
   const [totalMinutes, setTotalMinutes] = useState<number>(0);
@@ -146,7 +146,7 @@ const ExerciseScreen: React.FC = () => {
   useEffect(() => {
     const fetchExerciseLogs = async () => {
       if (user?.uid) {
-        const exerciseLogsQuery = query(exerciseLogsCollection, where("uid", "==", user.uid)); // Filter by uid
+        const exerciseLogsQuery = query(exerciseLogsCollection, where("uid", "==", user.uid));
         const querySnapshot = await getDocs(exerciseLogsQuery);
         const logs: ExerciseEntry[] = [];
         querySnapshot.forEach((doc) => {
@@ -163,7 +163,7 @@ const ExerciseScreen: React.FC = () => {
 
     const fetchExerciseGoal = async () => {
       if (user?.uid) {
-        const goalDoc = await getDoc(doc(exerciseGoalsCollection, user.uid)); // Use uid for the goal document
+        const goalDoc = await getDoc(doc(exerciseGoalsCollection, user.uid));
         if (goalDoc.exists()) {
           const goal = goalDoc.data()?.goal;
           setSavedExerciseGoal(goal);
@@ -205,7 +205,7 @@ const ExerciseScreen: React.FC = () => {
     try {
       if (user?.uid) {
         await addDoc(exerciseLogsCollection, {
-          uid: user.uid, // Associate exercise log with current user
+          uid: user.uid,
           exerciseName,
           minutes: numericMinutes,
           date: selectedDate,
@@ -232,8 +232,8 @@ const ExerciseScreen: React.FC = () => {
 
     try {
       if (user?.uid) {
-        const goalRef = doc(exerciseGoalsCollection, user.uid); // Set goal for current user
-        await setDoc(goalRef, { goal: goalInput, uid: user.uid }); // Save the goal with uid
+        const goalRef = doc(exerciseGoalsCollection, user.uid);
+        await setDoc(goalRef, { goal: goalInput, uid: user.uid });
 
         setSavedExerciseGoal(goalInput);
         setGoalInput('');
@@ -242,6 +242,7 @@ const ExerciseScreen: React.FC = () => {
       Alert.alert('Error', 'Failed to save goal.');
     }
   };
+
 
   const dateOptions = Array.from({ length: 7 }, (_, i) => {
     const date = new Date();

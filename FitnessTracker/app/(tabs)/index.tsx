@@ -8,14 +8,11 @@ import { ThemedView } from '@/components/ThemedView';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Stopwatch from '../stopwatch';
 
-
 export default function FitnessTrackerScreen() {
-  const colorScheme = useColorScheme(); // Get color scheme
+  const colorScheme = useColorScheme();
 
-  // Function to get the time of day and return a greeting
   const getGreeting = (): string => {
     const currentHour = new Date().getHours();
-
     if (currentHour < 12) {
       return 'Good Morning';
     } else if (currentHour < 18) {
@@ -36,21 +33,21 @@ export default function FitnessTrackerScreen() {
       try {
         const { status } = await Pedometer.requestPermissionsAsync();
         if (status === 'granted') {
-          console.log('Pedometer permission granted!'); 
+          console.log('Pedometer permission granted!');
 
           if (await Pedometer.isAvailableAsync()) {
             console.log('Pedometer is available!');
 
             const subscription = await Pedometer.watchStepCount(result => {
-              console.log('Step count updated:', result.steps); 
+              console.log('Step count updated:', result.steps);
               setSteps(result.steps);
               setDistance(result.steps * 0.0007);
-              setCalories(0); 
+              setCalories(0);
             });
 
             return () => {
               console.log('Unsubscribing from step count updates.');
-              subscription.remove(); 
+              subscription.remove();
             };
           } else {
             setError('Pedometer is not available on this device.');
@@ -59,7 +56,7 @@ export default function FitnessTrackerScreen() {
           setError('Access to Pedometer denied.');
         }
       } catch (error) {
-        console.error('Error during Pedometer setup:', error); 
+        console.error('Error during Pedometer setup:', error);
         if (error.message.includes('HealthKit')) {
           setError('Error accessing HealthKit: Please check your Health app settings.');
         } else {
@@ -90,7 +87,6 @@ export default function FitnessTrackerScreen() {
             {/* Add an icon here */}
           </ThemedView>
 
-          
           <ThemedView style={styles.greetingContainer}>
             <Text style={styles.greetingText}>{getGreeting()}</Text>
           </ThemedView>
@@ -106,16 +102,18 @@ export default function FitnessTrackerScreen() {
             </View>
             <View style={styles.statItem}>
               <Text style={styles.statLabel}>Calories</Text>
-              <Text style={styles.statValue}>{calories}</Text> 
+              <Text style={styles.statValue}>{calories}</Text>
             </View>
           </ThemedView>
 
           <Stopwatch />
-          </SafeAreaView>
+
+        </SafeAreaView>
       </ParallaxScrollView>
     </ThemedView>
   );
 }
+
 
 const styles = StyleSheet.create({
   titleContainer: {

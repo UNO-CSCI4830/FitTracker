@@ -1,48 +1,45 @@
 import React, { useState, useEffect } from 'react';
 import { View, TextInput, Button, Text, StyleSheet, Alert, TouchableOpacity } from 'react-native';
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail, onAuthStateChanged, updateEmail } from 'firebase/auth';
-import { app } from '../../firebaseConfig'; // Adjust the path to firebaseConfig.js if needed
+import { app } from '../../firebaseConfig';
 import { useColorScheme } from 'react-native';
-import { useUser } from './userContext'; // Import the custom hook
+import { useUser } from './userContext';
 
 const auth = getAuth(app);
 
 export default function AuthScreen() {
-  const { setGlobalUser } = useUser(); // Get setUser from context
+  const { setGlobalUser } = useUser();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const [user, setUser] = useState(null); // Store authenticated user
-  const [isForgotPassword, setIsForgotPassword] = useState(false); // State for handling forgot password view
-  const [newEmail, setNewEmail] = useState(''); // New email for change
-  const [isChangingEmail, setIsChangingEmail] = useState(false); // Show the change email input
-  const colorScheme = useColorScheme(); // Get the color scheme
+  const [user, setUser] = useState(null);
+  const [isForgotPassword, setIsForgotPassword] = useState(false);
+  const [newEmail, setNewEmail] = useState('');
+  const [isChangingEmail, setIsChangingEmail] = useState(false);
+  const colorScheme = useColorScheme();
 
-  // Listen for auth state changes
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       if (currentUser) {
-        setUser(currentUser); // Set user when logged in
-        setGlobalUser(currentUser); // Set user when logged in
+        setUser(currentUser);
+        setGlobalUser(currentUser);
       } else {
-        setUser(null); // Set user to null when logged out
-        setGlobalUser(null); // Set user when logged in
+        setUser(null);
+        setGlobalUser(null);
       }
     });
 
-    return () => unsubscribe(); // Cleanup subscription on unmount
+    return () => unsubscribe();
   }, []);
 
   const handleSignUp = async () => {
     try {
       await createUserWithEmailAndPassword(auth, email, password);
       Alert.alert('Success', 'Account created!');
-      // Clear input fields after successful sign-up
       setEmail('');
       setPassword('');
       setError('');
     } catch (err) {
-      // Handle Firebase errors and display a custom message
       if (err.code === 'auth/email-already-in-use') {
         setError('Email is already in use');
       } else if (err.code === 'auth/invalid-email') {
@@ -57,12 +54,10 @@ export default function AuthScreen() {
     try {
       await signInWithEmailAndPassword(auth, email, password);
       Alert.alert('Success', 'Logged in!');
-      // Clear input fields after successful sign-in
       setEmail('');
       setPassword('');
       setError('');
     } catch (err) {
-      // Handle Firebase errors and show custom error message
       if (err.code === 'auth/wrong-password' || err.code === 'auth/user-not-found') {
         setError('Invalid username/password');
       } else {
@@ -89,9 +84,8 @@ export default function AuthScreen() {
     try {
       await sendPasswordResetEmail(auth, email);
       Alert.alert('Success', 'Password reset email sent!');
-      // Clear the email field after sending the reset email
       setEmail('');
-      setIsForgotPassword(false); // Hide the forgot password form
+      setIsForgotPassword(false);
     } catch (err) {
       setError(err.message);
     }
@@ -102,8 +96,8 @@ export default function AuthScreen() {
       try {
         await updateEmail(user, newEmail);
         Alert.alert('Success', 'Email changed successfully!');
-        setNewEmail(''); // Clear the new email input
-        setIsChangingEmail(false); // Hide the change email form
+        setNewEmail('');
+        setIsChangingEmail(false);
       } catch (err) {
         setError('Error changing email: ' + err.message);
       }
@@ -113,14 +107,12 @@ export default function AuthScreen() {
   };
 
   return (
-    <View style={[styles.container, { backgroundColor: colorScheme === 'dark' ? '#333' : '#f5f5f5' }]}> 
+    <View style={[styles.container, { backgroundColor: colorScheme === 'dark' ? '#333' : '#f5f5f5' }]}>
       {user ? (
-        // If the user is signed in, show a welcome message and sign out button
         <>
-          <Text style={[styles.welcomeText, { color: colorScheme === 'dark' ? 'white' : 'black' }]}>Welcome, {user.email}!</Text> 
+          <Text style={[styles.welcomeText, { color: colorScheme === 'dark' ? 'white' : 'black' }]}>Welcome, {user.email}!</Text>
           <Button title="Sign Out" onPress={handleSignOut} />
-          
-          {/* Show Change Email button and input */}
+
           <TouchableOpacity onPress={() => setIsChangingEmail(true)}>
             <Text style={[styles.forgotPasswordText, { color: colorScheme === 'dark' ? '#fff' : '#000' }]}>Change Email</Text>
           </TouchableOpacity>
@@ -128,7 +120,7 @@ export default function AuthScreen() {
           {isChangingEmail && (
             <View style={styles.forgotPasswordContainer}>
               <TextInput
-                style={[styles.input, { backgroundColor: colorScheme === 'dark' ? '#555' : '#fff', color: colorScheme === 'dark' ? '#fff' : '#000' }]} 
+                style={[styles.input, { backgroundColor: colorScheme === 'dark' ? '#555' : '#fff', color: colorScheme === 'dark' ? '#fff' : '#000' }]}
                 placeholder="Enter new email"
                 onChangeText={setNewEmail}
                 value={newEmail}
@@ -141,22 +133,20 @@ export default function AuthScreen() {
           )}
         </>
       ) : (
-        // If the user is not signed in, show sign-in/sign-up form
         <>
           <TextInput
-            style={[styles.input, { backgroundColor: colorScheme === 'dark' ? '#555' : '#fff', color: colorScheme === 'dark' ? '#fff' : '#000' }]} 
+            style={[styles.input, { backgroundColor: colorScheme === 'dark' ? '#555' : '#fff', color: colorScheme === 'dark' ? '#fff' : '#000' }]}
             placeholder="Email"
             onChangeText={setEmail}
             value={email}
           />
           <TextInput
-            style={[styles.input, { backgroundColor: colorScheme === 'dark' ? '#555' : '#fff', color: colorScheme === 'dark' ? '#fff' : '#000' }]} 
+            style={[styles.input, { backgroundColor: colorScheme === 'dark' ? '#555' : '#fff', color: colorScheme === 'dark' ? '#fff' : '#000' }]}
             placeholder="Password"
             secureTextEntry
             onChangeText={setPassword}
             value={password}
           />
-          
           <View style={styles.buttonContainer}>
             <Button title="Sign Up" onPress={handleSignUp} />
             <Button title="Sign In" onPress={handleSignIn} />
@@ -169,7 +159,7 @@ export default function AuthScreen() {
           {isForgotPassword && (
             <View style={styles.forgotPasswordContainer}>
               <TextInput
-                style={[styles.input, { backgroundColor: colorScheme === 'dark' ? '#555' : '#fff', color: colorScheme === 'dark' ? '#fff' : '#000' }]} 
+                style={[styles.input, { backgroundColor: colorScheme === 'dark' ? '#555' : '#fff', color: colorScheme === 'dark' ? '#fff' : '#000' }]}
                 placeholder="Enter your email"
                 onChangeText={setEmail}
                 value={email}
@@ -187,6 +177,7 @@ export default function AuthScreen() {
     </View>
   );
 }
+
 
 const styles = StyleSheet.create({
   container: {

@@ -3,7 +3,7 @@ import { View, Text, TextInput, Alert, FlatList, StyleSheet, TouchableOpacity, C
 import { Picker } from '@react-native-picker/picker';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useColorScheme } from 'react-native';
-import { useUser } from './userContext'; // Import the useUser hook
+import { useUser } from './userContext';
 import { db } from '../../firebaseConfig';
 import { collection, addDoc, query, where, getDocs, setDoc, doc, getDoc } from 'firebase/firestore';
 
@@ -36,13 +36,13 @@ const getStyles = (colorScheme: ColorScheme) => StyleSheet.create({
   },
   input: {
     height: 40,
-    borderColor: colorScheme === 'dark' ? '#555' : '#ccc',
+    borderColor: colorScheme === 'dark' ? '#555' : '#ccc', // Use dynamic borderColor
     borderWidth: 1,
     marginBottom: 10,
     paddingLeft: 10,
     borderRadius: 5,
     width: '100%',
-    color: colorScheme === 'dark' ? 'white' : 'black',
+    color: colorScheme === 'dark' ? 'white' : 'black', // Use dynamic color
   },
   actionButton: {
     paddingVertical: 10,
@@ -60,7 +60,7 @@ const getStyles = (colorScheme: ColorScheme) => StyleSheet.create({
     fontSize: 16,
     marginTop: 10,
     fontWeight: 'bold',
-    alignSelf: 'center'
+    alignSelf: 'center',
   },
   datePicker: {
     height: 50,
@@ -86,9 +86,9 @@ const getStyles = (colorScheme: ColorScheme) => StyleSheet.create({
     marginBottom: 10,
     padding: 10,
     borderRadius: 5,
-    backgroundColor: colorScheme === 'dark' ? '#444' : '#f9f9f9',
+    backgroundColor: colorScheme === 'dark' ? '#444' : '#f9f9f9', // Use dynamic backgroundColor
     borderWidth: 2,
-    borderColor: colorScheme === 'dark' ? '#555' : '#ddd',
+    borderColor: colorScheme === 'dark' ? '#555' : '#ddd', // Use dynamic borderColor
     width: '100%',
   },
   totalHoursContainer: {
@@ -113,17 +113,17 @@ type SleepEntry = {
 };
 
 const SleepScreen: React.FC = () => {
-  const { user } = useUser();
-  const sleepLogsCollection = collection(db, "sleepLog");
-  const sleepGoalsCollection = collection(db, "sleepGoals");
+  const { user } = useUser(); // Get user from context
+  const sleepLogsCollection = collection(db, "sleepLog"); // Sleep logs collection
+  const sleepGoalsCollection = collection(db, "sleepGoals"); // Sleep goals collection
   const [hoursSlept, setHoursSlept] = useState<string>('');
   const [sleepLog, setSleepLog] = useState<SleepEntry[]>([]);
   const [selectedDate, setSelectedDate] = useState<string>(new Date().toDateString());
   const [savedSleepGoal, setSavedSleepGoal] = useState<string>('');
-  const [goalInput, setGoalInput] = useState<string>(''); // Temporary input for goal
+  const [goalInput, setGoalInput] = useState<string>('');
   const [goalStatus, setGoalStatus] = useState<string>('');
   const [goalStatusColor, setGoalStatusColor] = useState<string>('green');
-  const [totalHoursSlept, setTotalHoursSlept] = useState<number>(0);
+  const [totalHoursSlept, setTotalHoursSlept] = useState<number>(0); // State to track total hours slept
   const colorScheme = useColorScheme();
   const styles = getStyles(colorScheme);
 
@@ -158,12 +158,14 @@ const SleepScreen: React.FC = () => {
     fetchSleepGoal();
   }, [user?.uid]);
 
+  // useEffect to calculate total hours slept for the selected date
   useEffect(() => {
     const total = sleepLog
       .filter((entry) => entry.date === selectedDate)
       .reduce((sum, entry) => sum + entry.hoursSlept, 0);
     setTotalHoursSlept(total);
 
+    // Check if sleep goal is met and update goal status
     if (savedSleepGoal && total >= parseInt(savedSleepGoal, 10)) {
       setGoalStatus(`Goal of ${savedSleepGoal} hours met!`);
       setGoalStatusColor('green');
@@ -172,6 +174,7 @@ const SleepScreen: React.FC = () => {
       setGoalStatusColor('red');
     }
   }, [selectedDate, sleepLog, totalHoursSlept, savedSleepGoal]);
+
 
   const handleLogSleep = async () => {
     if (!hoursSlept) {
@@ -187,12 +190,14 @@ const SleepScreen: React.FC = () => {
 
     try {
       if (user?.uid) {
+        // Add a new sleep log entry to Firestore
         await addDoc(sleepLogsCollection, {
           uid: user.uid,
           sleepHours: numericHours,
           date: selectedDate,
         });
 
+        // Update the local sleep log state
         setSleepLog((prevLogs) => [
           ...prevLogs,
           { id: Date.now().toString(), hoursSlept: numericHours, date: selectedDate },
@@ -227,7 +232,7 @@ const SleepScreen: React.FC = () => {
     }
   };
 
-  const dateOptions: string[] = Array.from({ length: 7 }, (_, i) => {
+  const dateOptions = Array.from({ length: 7 }, (_, i) => {
     const date = new Date();
     date.setDate(date.getDate() - i);
     return date.toDateString();
@@ -241,6 +246,7 @@ const SleepScreen: React.FC = () => {
         <Text style={styles.title}>Log Sleep</Text>
 
         <View style={styles.inputGroup}>
+          {/* Input for setting the sleep goal */}
           <TextInput
             placeholder="Set Sleep Goal (Hours)"
             style={styles.input}
@@ -248,15 +254,18 @@ const SleepScreen: React.FC = () => {
             value={goalInput}
             onChangeText={setGoalInput}
           />
+          {/* Display the saved sleep goal and status */}
           {savedSleepGoal && (
             <Text style={[styles.goalStatus, { color: goalStatusColor }]}>{goalStatus}</Text>
           )}
+          {/* Button to save the sleep goal */}
           <TouchableOpacity style={getActionButtonStyles(colorScheme)} onPress={handleSaveGoal}>
             <Text style={styles.buttonText}>Save Sleep Goal</Text>
           </TouchableOpacity>
         </View>
 
         <View style={styles.inputGroup}>
+          {/* Picker to select the date for logging sleep */}
           <Picker
             selectedValue={selectedDate}
             onValueChange={setSelectedDate}
@@ -268,6 +277,7 @@ const SleepScreen: React.FC = () => {
         </View>
 
         <View style={styles.inputGroup}>
+          {/* Input for entering the hours slept */}
           <TextInput
             placeholder="Enter Hours Slept"
             style={styles.input}
@@ -275,11 +285,13 @@ const SleepScreen: React.FC = () => {
             value={hoursSlept}
             onChangeText={setHoursSlept}
           />
+          {/* Button to log the sleep entry */}
           <TouchableOpacity style={getActionButtonStyles(colorScheme)} onPress={handleLogSleep}>
             <Text style={styles.buttonText}>Log Sleep</Text>
           </TouchableOpacity>
         </View>
 
+        {/* Display the logged sleep entries */}
         <View style={styles.logEntriesContainer}>
           <Text style={styles.logsTitle}>Sleep Log Entries</Text>
           <FlatList
@@ -294,6 +306,7 @@ const SleepScreen: React.FC = () => {
           />
         </View>
 
+        {/* Display the total hours slept */}
         <View style={styles.totalHoursContainer}>
           <Text style={styles.totalHoursText}>
             Total Hours: {totalHoursSlept} hrs

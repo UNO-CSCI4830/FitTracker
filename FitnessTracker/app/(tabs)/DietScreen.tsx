@@ -3,7 +3,7 @@ import { View, Text, TextInput, Alert, FlatList, StyleSheet, TouchableOpacity, C
 import { Picker } from '@react-native-picker/picker';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useColorScheme } from 'react-native';
-import { useUser } from './userContext'; // Import the useUser hook
+import { useUser } from './userContext';
 import { db } from '../../firebaseConfig';
 import { collection, addDoc, query, where, getDocs, setDoc, doc, getDoc } from 'firebase/firestore';
 
@@ -122,7 +122,7 @@ const getStyles = (colorScheme: ColorScheme) => StyleSheet.create({
 
 type DietEntry = {
   id: string;
-  foodName: string;
+  foodName: string; 
   calories: number;
   date: string;
 };
@@ -135,8 +135,8 @@ const DietScreen: React.FC = () => {
   const [calories, setCalories] = useState<string>('');
   const [dietLog, setDietLog] = useState<DietEntry[]>([]);
   const [selectedDate, setSelectedDate] = useState<string>(new Date().toDateString());
-  const [savedDietGoal, setSavedDietGoal] = useState<string>(''); 
-  const [goalInput, setGoalInput] = useState<string>(''); 
+  const [savedDietGoal, setSavedDietGoal] = useState<string>('');  
+  const [goalInput, setGoalInput] = useState<string>('');  
   const [goalStatus, setGoalStatus] = useState<string>('');
   const [goalStatusColor, setGoalStatusColor] = useState<string>('green');
   const [totalCalories, setTotalCalories] = useState<number>(0);
