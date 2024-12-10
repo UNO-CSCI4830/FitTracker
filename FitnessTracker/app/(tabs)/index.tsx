@@ -2,14 +2,28 @@ import React, { useState, useEffect } from 'react';
 import { Image, StyleSheet, View, Text, Platform } from 'react-native';
 import { Pedometer } from 'expo-sensors';
 import { useColorScheme } from 'react-native';
+import * as Notifications from 'expo-notifications';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Stopwatch from '../stopwatch';
+import { db } from '../../firebaseConfig';
+import { collection, doc, getDoc, query, where, getDocs } from 'firebase/firestore';
+import { useUser } from './userContext';
+
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: false,
+    shouldSetBadge: false,
+  }),
+});
 
 export default function FitnessTrackerScreen() {
   const colorScheme = useColorScheme();
+  const { user } = useUser();
 
   const getGreeting = (): string => {
     const currentHour = new Date().getHours();
@@ -27,6 +41,101 @@ export default function FitnessTrackerScreen() {
   const [calories, setCalories] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  useEffect(() => {
+    // Request permissions (Notifications and Pedometer)
+    const requestPermissions = async () => {
+      const { status: notificationStatus } = await Notifications.requestPermissionsAsync();
+      if (notificationStatus !== 'granted') {
+        console.log('Notification permissions not granted!');
+      }
+
+      const { status: pedometerStatus } = await Pedometer.requestPermissionsAsync();
+      if (pedometerStatus !== 'granted') {
+        console.log('Pedometer permissions not granted!');
+      }
+    };
+
+    requestPermissions();
+  }, []);
+
+  const fetchExerciseGoalFromFirestore = async () => {
+    try {
+      if (user?.uid) {
+        const exerciseGoalsCollection = collection(db, 'exerciseGoals');
+        const goalDocRef = doc(exerciseGoalsCollection, user.uid);
+        const goalDoc = await getDoc(goalDocRef);
+
+        if (goalDoc.exists()) {
+          return goalDoc.data().goal;
+        } else {
+          console.log('No exercise goal found!');
+          return 0;
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching exercise goal:', error);
+      return 0;
+    }
+  };
+
+  const fetchTotalMinutesFromFirestore = async () => {
+    try {
+      if (user?.uid) {
+        const today = new Date().toDateString();
+        const exerciseLogsCollection = collection(db, 'exerciseLog');
+        const q = query(exerciseLogsCollection, where('uid', '==', user.uid), where('date', '==', today));
+        const querySnapshot = await getDocs(q);
+
+        let totalMinutes = 0;
+        querySnapshot.forEach((doc) => {
+          totalMinutes += doc.data().minutes;
+        });
+
+        return totalMinutes;
+      }
+    } catch (error) {
+      console.error('Error fetching total minutes:', error);
+      return 0;
+    }
+  };
+
+  const checkAndSendNotification = async () => {
+    const exerciseGoal = await fetchExerciseGoalFromFirestore();
+    const totalMinutes = await fetchTotalMinutesFromFirestore();
+
+    const exerciseGoalMet = totalMinutes >= exerciseGoal;
+
+    if (!exerciseGoalMet) {
+      await Notifications.scheduleNotificationAsync({
+        content: {
+          title: "Reminder: Don't forget your fitness goals!",
+          body: "You haven't met your exercise goal for today.",
+        },
+        trigger: {
+          hour: 21,
+          minute: 0,
+        },
+      });
+    }
+  };
+
+  useEffect(() => {
+    const checkGoalsTimeout = setTimeout(() => {
+      checkAndSendNotification();
+    }, calculateTimeUntil9PM());
+
+    return () => clearTimeout(checkGoalsTimeout);
+  }, []);
+
+  const calculateTimeUntil9PM = () => {
+    const now = new Date();
+    const ninePM = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 21, 0, 0);
+    if (now > ninePM) {
+      ninePM.setDate(ninePM.getDate() + 1);
+    }
+    return ninePM.getTime() - now.getTime();
+  };
 
   useEffect(() => {
     const startTracking = async () => {
@@ -84,7 +193,6 @@ export default function FitnessTrackerScreen() {
         <SafeAreaView style={{ flex: 1 }}>
           <ThemedView style={styles.titleContainer}>
             <ThemedText type="title">Fitness Tracker</ThemedText>
-            {/* Add an icon here */}
           </ThemedView>
 
           <ThemedView style={styles.greetingContainer}>
@@ -107,7 +215,6 @@ export default function FitnessTrackerScreen() {
           </ThemedView>
 
           <Stopwatch />
-
         </SafeAreaView>
       </ParallaxScrollView>
     </ThemedView>
